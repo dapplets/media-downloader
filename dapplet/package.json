@@ -1,7 +1,7 @@
 {
   "name": "media-downloader.dapplet-base.eth",
   "version": "0.1.0",
-  "description": "Download media files from websites like YouTube",
+  "description": "Download media files from websites like YouTube and upload them to Swarm",
   "main": "lib/index.js",
   "scripts": {
     "start": "rollup -w --config rollup.config.js",
