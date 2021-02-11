@@ -1,6 +1,7 @@
 import { } from '@dapplets/dapplet-extension'
 //import { T_TwitterFeatureConfig, ITwitterAdapter } from '@dapplets/twitter-adapter'
-import EXAMPLE_IMG from './icons/icon344.png'
+import DOWNLOAD_ICON from './icons/download-24px.svg';
+import DONE_ICON from './icons/done-24px.svg';
 
 
 @Injectable
@@ -16,7 +17,9 @@ export default class TwitterFeature {
                 button({
                     initial: "DEFAULT",
                     "DEFAULT": {
-                        label: "Injected Button",
+                        img: DOWNLOAD_ICON,
+                        label: "DOWNLOAD",
+                        tooltip: 'Download and upload video to Swarm',
                         init: (ctx, me) => console.log(ctx),
                         exec: async (ctx, me) => {
 
@@ -38,23 +41,32 @@ export default class TwitterFeature {
                             });
 
                             const json = await resp2.json();
-                            console.log(json.reference);
+                            alert(json.reference);
                             
                             me.state = 'DONE';
 
-                        },
-                        img: EXAMPLE_IMG
+                        }
                     },
                     "FETCHING": {
-                        label: 'FETCHING'
+                        img: DOWNLOAD_ICON,
+                        label: 'FETCHING',
+                        disabled: true,
+                        loading: true
                     },
                     "DOWNLOADING": {
-                        label: 'DOWNLOADING'
+                        img: DOWNLOAD_ICON,
+                        label: 'DOWNLOADING',
+                        disabled: true,
+                        loading: true
                     },
                     "UPLOADING": {
-                        label: 'UPLOADING'
+                        img: DOWNLOAD_ICON,
+                        label: 'UPLOADING',
+                        disabled: true,
+                        loading: true
                     },
                     "DONE": {
+                        img: DONE_ICON,
                         label: 'DONE',
                         exec: (_, me) => me.state = 'DEFAULT'
                     }
