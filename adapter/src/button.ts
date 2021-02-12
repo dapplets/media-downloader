@@ -115,12 +115,20 @@ export class Button {
                     right: 0;
                     padding: 5%;
                   }
+
+                  .dapplet-widget-button {
+                    color: ${disabled ? '#5a5a5a' : '#606060'};
+                  }
+
+                  html[dark] .dapplet-widget-button {
+                    color: ${disabled ? '#5a5a5a' : '#aaaaaa'};
+                  }
                 </style>
                 <div 
+                  class="dapplet-widget-button"
                     style="
                         display: flex;
                         font-family: Roboto, Arial, sans-serif;
-                        color: ${disabled ? '#5a5a5a' : '#aaaaaa'};
                         font-size: 14px;
                         text-transform: uppercase;
                         font-weight: 500;
@@ -141,7 +149,7 @@ export class Button {
                         </svg>
                     </div>`}
                     <div style="
-                        line-height: 36px;
+                        line-height: 38px;
                     ">${label}</div>
                 </div>
             `;
