@@ -42,8 +42,7 @@
       let top = util.between(js, keys[0], keys[1], 1, -28)
       let fn = keys[2] + util.between(top, keys[0], keys[3], 10, 1).split('.')[0] + keys[4]
       let side = util.between(js, fn, keys[1], 2, -fn.length)
-      const scopedEval = (scope, script) => Function(script).bind(scope)();
-      return scopedEval(window, side + top) // eslint-disable-line no-eval
+      return eval.bind(window)(side + top) // eslint-disable-line no-eval
     }
   
     async function getVideoData (id, sts, detail) {
