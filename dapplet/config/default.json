@@ -1,14 +1,14 @@
 {
     "main": {
-        "exampleString": "some string value",
-        "exampleHiddenString": "some string value"
+        "overlayUrl": "https://media-downloader-overlay.herokuapp.com",
+        "swarmGatewayUrl": "https://gateway.ethswarm.org"
     },
     "test": {
-        "exampleString": "some string value",
-        "exampleHiddenString": "some string value"
+        "overlayUrl": "https://media-downloader-overlay.herokuapp.com",
+        "swarmGatewayUrl": "https://gateway.ethswarm.org"
     },
     "dev": {
-        "exampleString": "some string value",
-        "exampleHiddenString": "some string value"
+        "overlayUrl": "https://localhost:3003",
+        "swarmGatewayUrl": "http://localhost:1633"
     }
 }

@@ -1,18 +1,17 @@
 {
     "type": "object",
     "required": [
-        "exampleString",
-        "exampleHiddenString"
+        "overlayUrl",
+        "swarmGatewayUrl"
     ],
     "properties": {
-        "exampleString": {
+        "overlayUrl": {
             "type": "string",
-            "title": "Example of string property"
+            "title": "Overlay URL"
         },
-        "exampleHiddenString": {
+        "swarmGatewayUrl": {
             "type": "string",
-            "title": "Example of hidden string property",
-            "hidden": true
+            "title": "Swarm Gateway URL"
         }
     }
 }
