@@ -1,0 +1,21 @@
+{
+  "name": "contract.media-downloader.dapplet-base.eth",
+  "version": "0.1.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test",
+    "migrate": "truffle migrate",
+    "migrate:rinkeby": "truffle migrate --network rinkeby --skip-dry-run --reset",
+    "compile": "truffle compile"
+  },
+  "author": "Project Dapplets",
+  "license": "MIT",
+  "devDependencies": {
+    "@truffle/hdwallet-provider": "^1.2.2",
+    "truffle": "^5.1.66"
+  }
+}
