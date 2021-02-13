@@ -10,7 +10,7 @@
         "contractAddress": "0xD7A473FBd2a814E47bade8C5EEcFb84ed11Fd0E3"
     },
     "dev": {
-        "overlayUrl": "https://localhost:3003",
+        "overlayUrl": "https://localhost:3004",
         "swarmGatewayUrl": "https://gateway.ethswarm.org",
         "contractAddress": "0xD7A473FBd2a814E47bade8C5EEcFb84ed11Fd0E3"
     }
