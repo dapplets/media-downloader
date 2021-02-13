@@ -20,7 +20,7 @@
   },
   "homepage": "./",
   "scripts": {
-    "start": "cross-env HTTPS=true PORT=3003 BROWSER=none react-scripts start",
+    "start": "cross-env HTTPS=true PORT=3004 BROWSER=none react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "archive": "tar -C build -cvf temp.tar *",
