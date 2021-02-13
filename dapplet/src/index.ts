@@ -21,9 +21,27 @@ export default class TwitterFeature {
         @Inject("youtube-adapter.dapplet-base.eth")
         public adapter: any //ITwitterAdapter;
     ) {
-        const { button } = this.adapter.exports;
+        const { button, badge } = this.adapter.exports;
 
         this.adapter.attachConfig({
+            SEARCH_RESULT_BADGES: [
+                badge({
+                    "DEFAULT": {
+                        hidden: true,
+                        init: async (ctx, me) => {
+                            const hash = await digestMessage(ctx.videoId);
+                            const attachments = await this._getAttachments('0x' + hash);
+                            if (attachments.length > 0) {
+                                me.state = "AVAILABLE";
+                            }
+                        }
+                    },
+                    "AVAILABLE": {
+                        label: 'AVAILABLE IN SWARM',
+                        color: '#ffc300'
+                    }
+                })
+            ],
             MENU: [
                 button({
                     initial: "DEFAULT",
@@ -35,7 +53,6 @@ export default class TwitterFeature {
                             me.state = "LOADING";
                             const hash = await digestMessage(ctx.videoId);
                             const attachments = await this._getAttachments('0x' + hash);
-                            console.log(attachments);
                             me.state = 'DEFAULT';
                             if (attachments.length > 0) {
                                 me.label = 'AVAILABLE IN SWARM';
