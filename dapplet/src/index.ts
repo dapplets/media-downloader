@@ -213,7 +213,7 @@ export default class TwitterFeature {
 
     private async _addAttachment(key: string, ref: string) {
         const contract = await this._getContract();
-        const tx = contract.add(key, ref);
+        const tx = await contract.add(key, ref);
         return tx.wait();
     }
 
