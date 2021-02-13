@@ -1,18 +1,20 @@
 import { IFeature } from '@dapplets/dapplet-extension';
 //import { IDynamicAdapter } from 'dynamic-adapter.dapplet-base.eth';
 import { IButtonState, Button } from './button';
-import  './ytdl.js';
+import { Badge } from './badge';
+import './ytdl.js';
 
 @Injectable
 export default class TwitterAdapter {
 
     // ToDo: refactor it
     public exports = featureId => ({
-        button: this.adapter.createWidgetFactory(Button)
+        button: this.adapter.createWidgetFactory(Button),
+        badge: this.adapter.createWidgetFactory(Badge)
     });
 
     public config = [{
-        containerSelector: '#primary',
+        containerSelector: 'ytd-watch-flexy #primary',
         contextSelector: "#primary-inner",
         insPoints: {
             MENU: {
@@ -26,6 +28,23 @@ export default class TwitterAdapter {
             videoId: (new URL(document.location.href)).searchParams.get('v'),
             getInfo: () => window['ytdlr']()
         })
+    }, {
+        containerSelector: 'ytd-search',
+        contextSelector: "ytd-video-renderer",
+        insPoints: {
+            SEARCH_RESULT_BADGES: {
+                selector: "#badges",
+                insert: 'inside'
+            }
+        },
+        contextBuilder: (p: any) => {
+            p.querySelector('#badges')?.removeAttribute("hidden"); // make badges div visible
+
+            return ({
+                title: p.querySelector('#title-wrapper h3').innerText,
+                videoId: p.querySelector('#title-wrapper h3 a').getAttribute('href').substring(9)
+            })
+        }
     }];
 
     constructor(
