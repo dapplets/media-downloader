@@ -1,5 +1,10 @@
 # Media Downloader
-Download videos from YouTube and upload them to Swarm
+
+This project was developed at the [**Liberate Data Week Hackathon**](https://medium.com/ethereum-swarm/liberate-data-week-join-the-hackathon-7291bd307e32) in 8–14 February 2021.
+
+We created a Dapplet augmenting the YouTube website to download the video to Swarm and then to attach it to any existing tweet.
+
+Next versions of the Media Downloader may download any type of content to Swarm or FairOS and attach it to any other content elements in web (specific content adapter required). 
 
 ## Getting Started
 
@@ -42,3 +47,16 @@ Also the dapplet uses the overlay by following address:
 * overlay - `https://localhost:3004`
 
 After that the Media Downloader dapplet will be available in the store of the extension (popup -> dapplets tab).
+
+## Built With
+* [Dapplets Platform](https://github.com/dapplets/dapplet-extension)
+* [FairOS](https://fairos.io)
+* [Ethereum Swarm](https://swarm.ethereum.org)
+* [Ethereum](http://ethereum.org)
+* [Bee JS Library](https://github.com/ethersphere/bee-js)
+* [TypeScript](https://www.typescriptlang.org)
+* [React.js](https://reactjs.org)
+
+## Authors
+* **Alexander Sakhaev** - *Initial work* - [alsakhaev](https://github.com/alsakhaev)
+* **Dmitry Palchun** - *Initial work* - [ethernian](https://github.com/ethernian)
