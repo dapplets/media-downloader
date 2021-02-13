@@ -1,5 +1,6 @@
 import abi from './abi';
 import * as ethers from "ethers";
+import { Bee } from "@ethersphere/bee-js";
 
 export type Attachment = {
     mimetype: string;
@@ -9,10 +10,12 @@ export type Attachment = {
 
 export class AttachmentService {
     private _contract;
+    private _bee;
 
     constructor(_contractAddress: string, private _swarmGatewayAddress: string) {
         const signer = ethers.getDefaultProvider('rinkeby');
         this._contract = new ethers.Contract(_contractAddress, abi, signer);
+        this._bee = new Bee(_swarmGatewayAddress);
     }
 
     public async getAttachments(key: string): Promise<Attachment[]> {
@@ -24,11 +27,11 @@ export class AttachmentService {
 
     private async _fetchSwarmManifest(ref: string): Promise<{ mimetype: string, filename: string }> {
         if (ref.indexOf('0x') !== -1) ref = ref.replace('0x', '');
-        const resp = await fetch(this._swarmGatewayAddress + '/bytes/' + ref);
-        const buf = await resp.arrayBuffer();
-        const manifestRef = this._buf2hex(buf.slice(32, 64));
-        const resp2 = await fetch(this._swarmGatewayAddress + '/bytes/' + manifestRef);
-        const manifest = await resp2.json();
+        const arr = await this._bee.downloadData(ref);
+        const manifestRef = this._buf2hex(arr.slice(32, 64));
+        const arr2 = await this._bee.downloadData(manifestRef);
+        const json = new TextDecoder("utf-8").decode(arr2);
+        const manifest = JSON.parse(json);
         return manifest;
     }
 
