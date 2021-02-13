@@ -1,16 +1,16 @@
 {
     "main": {
-        "overlayUrl": "https://media-downloader-overlay.herokuapp.com",
+        "overlayUrl": "https://swarm-attachments-overlay.herokuapp.com",
         "swarmGatewayUrl": "https://gateway.ethswarm.org",
         "contractAddress": "0xD7A473FBd2a814E47bade8C5EEcFb84ed11Fd0E3"
     },
     "test": {
-        "overlayUrl": "https://media-downloader-overlay.herokuapp.com",
+        "overlayUrl": "https://swarm-attachments-overlay.herokuapp.com",
         "swarmGatewayUrl": "https://gateway.ethswarm.org",
         "contractAddress": "0xD7A473FBd2a814E47bade8C5EEcFb84ed11Fd0E3"
     },
     "dev": {
-        "overlayUrl": "https://localhost:3004",
+        "overlayUrl": "https://localhost:3005",
         "swarmGatewayUrl": "https://gateway.ethswarm.org",
         "contractAddress": "0xD7A473FBd2a814E47bade8C5EEcFb84ed11Fd0E3"
     }
