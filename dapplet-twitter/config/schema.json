@@ -1,0 +1,22 @@
+{
+    "type": "object",
+    "required": [
+        "overlayUrl",
+        "swarmGatewayUrl",
+        "contractAddress"
+    ],
+    "properties": {
+        "overlayUrl": {
+            "type": "string",
+            "title": "Overlay URL"
+        },
+        "swarmGatewayUrl": {
+            "type": "string",
+            "title": "Swarm Gateway URL"
+        },
+        "contractAddress": {
+            "type": "string",
+            "title": "Contract Address"
+        }
+    }
+}
