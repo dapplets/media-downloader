@@ -2,10 +2,20 @@ import { } from '@dapplets/dapplet-extension'
 //import { T_TwitterFeatureConfig, ITwitterAdapter } from '@dapplets/twitter-adapter'
 import DOWNLOAD_ICON from './icons/download-24px.svg';
 import DONE_ICON from './icons/done-24px.svg';
-import { AutoProperties, Connection } from '@dapplets/dapplet-extension/lib/inpage/connection';
+import abi from './abi';
+
+async function digestMessage(message) {
+    const msgUint8 = new TextEncoder().encode(message);                           // encode as (utf-8) Uint8Array
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);           // hash the message
+    const hashArray = Array.from(new Uint8Array(hashBuffer));                     // convert buffer to byte array
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join(''); // convert bytes to hex string
+    return hashHex;
+}
 
 @Injectable
 export default class TwitterFeature {
+
+    private _contract;
 
     constructor(
         @Inject("youtube-adapter.dapplet-base.eth")
@@ -21,22 +31,36 @@ export default class TwitterFeature {
                         img: DOWNLOAD_ICON,
                         label: "DOWNLOAD",
                         tooltip: 'Download and upload video to Swarm',
-                        //init: (ctx, me) => console.log(ctx),
+                        init: async (ctx, me) => {
+                            me.state = "LOADING";
+                            const hash = await digestMessage(ctx.videoId);
+                            const attachments = await this._getAttachments('0x' + hash);
+                            console.log(attachments);
+                            me.state = 'DEFAULT';
+                            if (attachments.length > 0) {
+                                me.label = 'AVAILABLE IN SWARM';
+                            } else {
+                                me.label = 'UPLOAD TO SWARM';
+                            }
+                        },
                         exec: async (ctx, me) => {
 
-                            me.state = 'FETCHING';
+                            me.state = 'LOADING';
 
                             const overlayUrl = await Core.storage.get('overlayUrl');
                             const overlay = Core.overlay({ url: overlayUrl, title: 'Media Downloader' });
                             overlay.send(null); // just open overlay
 
                             const swarmGatewayUrl = await Core.storage.get('swarmGatewayUrl');
+                            const contractAddress = await Core.storage.get('contractAddress');
 
                             const info = await ctx.getInfo();
                             info.swarmGatewayUrl = swarmGatewayUrl;
+                            info.contractAddress = contractAddress;
+
                             overlay.sendAndListen('info', info, {
                                 'download': async (op, { type, message }) => {
-                                    const url = message;
+                                    const { url, filename } = message;
 
                                     const supportsRequestStreams = !new Request('', {
                                         body: new ReadableStream(),
@@ -62,7 +86,7 @@ export default class TwitterFeature {
                                         response.body.pipeTo(writable);
 
                                         // Post to url2:
-                                        const response2 = await fetch(swarmGatewayUrl + '/files', {
+                                        const response2 = await fetch(swarmGatewayUrl + '/files?name=' + encodeURIComponent(filename), {
                                             method: 'POST',
                                             body: readable, //.pipeThrough(transformStream2),
                                             headers: {
@@ -74,7 +98,11 @@ export default class TwitterFeature {
                                         overlay.send('downloaded', {
                                             reference: json2.reference,
                                             tag: response2.headers.get('Swarm-Tag') ?? response2.headers.get('Swarm-Tag-Uid')
-                                        })
+                                        });
+                                        digestMessage(info.info.id).then(async (x) => {
+                                            await this._addAttachment('0x' + x, '0x' + json2.reference)
+                                            me.label = 'AVAILABLE IN SWARM';
+                                        });
                                     } else {
                                         const response = await fetch(url);
                                         var loaded = 0
@@ -96,13 +124,17 @@ export default class TwitterFeature {
                                         }).blob();
 
                                         var xhr = new XMLHttpRequest();
-                                        xhr.open('POST', swarmGatewayUrl + '/files', true);
-                                        xhr.onload = function (e: any) {
+                                        xhr.open('POST', swarmGatewayUrl + '/files?name=' + encodeURIComponent(filename), true);
+                                        xhr.onload = (e: any) => {
                                             const result = JSON.parse(e.target.responseText);
                                             overlay.send('downloaded', {
                                                 reference: result.reference,
                                                 tag: xhr.getResponseHeader('Swarm-Tag') ?? xhr.getResponseHeader('Swarm-Tag-Uid')
                                             })
+                                            digestMessage(info.info.id).then(async (x) => {
+                                                await this._addAttachment('0x' + x, '0x' + result.reference)
+                                                me.label = 'AVAILABLE IN SWARM';
+                                            });
                                         };
 
                                         xhr.upload.onprogress = function (e) {
@@ -138,9 +170,9 @@ export default class TwitterFeature {
 
                         }
                     },
-                    "FETCHING": {
+                    "LOADING": {
                         img: DOWNLOAD_ICON,
-                        label: 'FETCHING',
+                        label: 'LOADING',
                         disabled: true,
                         loading: true
                     },
@@ -174,4 +206,23 @@ export default class TwitterFeature {
         this.adapter.detachFeature(this);
     }
 
+    private async _getAttachments(key: string) {
+        const contract = await this._getContract();
+        return contract.getByKey(key);
+    }
+
+    private async _addAttachment(key: string, ref: string) {
+        const contract = await this._getContract();
+        const tx = contract.add(key, ref);
+        return tx.wait();
+    }
+
+    private async _getContract() {
+        if (!this._contract) {
+            const address = await Core.storage.get('contractAddress');
+            this._contract = Core.contract(address, abi);
+        }
+
+        return this._contract;
+    }
 }

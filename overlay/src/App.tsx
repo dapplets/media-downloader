@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { ProfilerOnRenderCallback } from 'react';
 import './App.css';
-import { bridge, Format, VideoInfo } from './bridge';
+import { bridge, Format, Info } from './bridge';
 import { Button, Container, Divider, Dropdown, Form, Icon, Item, Loader, Message, Progress, Segment } from 'semantic-ui-react';
+import { AttachmentService, Attachment } from './services/attachment';
+import { digestMessage } from './utils';
+import { Attachments } from './components/Attachments';
+import mime from 'mime';
 
 interface Props {
 
@@ -9,7 +13,7 @@ interface Props {
 
 interface State {
   swarmGatewayUrl: string;
-  info: VideoInfo | null;
+  info: Info | null;
   quality: string | null;
   formatOptions: {
     key: string, text: string, value: string
@@ -20,32 +24,44 @@ interface State {
   uploadStatus: number;
   isStreamingSupported: boolean;
   tag: string | null;
+  attachments: Attachment[];
 }
 
 class App extends React.Component<Props, State> {
 
-  state = {
-    swarmGatewayUrl: 'https://gateway.ethswarm.org',
-    info: null,
-    quality: null,
-    formatOptions: [],
-    uploading: false,
-    swarmReference: null,
-    downloadStatus: 0,
-    uploadStatus: 0,
-    isStreamingSupported: !new Request('', { body: new ReadableStream(), method: 'POST' }).headers.has('Content-Type'),
-    tag: null
+  private _attachmentService?: AttachmentService;
+
+  constructor(p: Props) {
+    super(p);
+    this.state = {
+      swarmGatewayUrl: 'https://gateway.ethswarm.org',
+      info: null,
+      quality: null,
+      formatOptions: [],
+      uploading: false,
+      swarmReference: null,
+      downloadStatus: 0,
+      uploadStatus: 0,
+      isStreamingSupported: !new Request('', { body: new ReadableStream(), method: 'POST' }).headers.has('Content-Type'),
+      tag: null,
+      attachments: []
+    };
   }
 
   componentDidMount() {
-    bridge.onInfo((info) => {
+    bridge.onInfo(async (info) => {
+      this._attachmentService = new AttachmentService(info.contractAddress, info.swarmGatewayUrl);
+
+      const hash = await digestMessage(info.info.id);
+      const attachments = await this._attachmentService.getAttachments(hash);
+
       const formatOptions = info.formats.filter(x => !!x.stats.channels && !!x.stats.width).map((x, i) => ({
         key: x.url,
         text: `${x.quality}`,
         value: x.url
       }))
 
-      this.setState({ swarmGatewayUrl: info.swarmGatewayUrl, info, formatOptions, quality: formatOptions[0]?.key });
+      this.setState({ swarmGatewayUrl: info.swarmGatewayUrl, info, formatOptions, quality: formatOptions[0]?.key, attachments });
 
     });
 
@@ -54,16 +70,26 @@ class App extends React.Component<Props, State> {
   }
 
   private async _download() {
+    const s = this.state;
+    const info = this.state.info as any as Info;
+
     this.setState({ uploading: true });
-    const url: string = this.state.quality as any;
-    const data = await bridge.download(url);
+
+    const qualityName = s.formatOptions.find(x => x.key === s.quality)!.text;
+    const mimeType = s.info!.formats.find(x => x.url === s.quality)!.mime;
+
+    const url: string = s.quality as any;
+    const extension = mime.getExtension(mimeType); 
+    const filename = `${info.info.author.title} - ${info.info.title} (${qualityName}).${extension}`;
+    
+    const data = await bridge.download(url, filename);
     this.setState({ uploading: false, swarmReference: data.reference, tag: data.tag })
   }
 
   render() {
 
     const s = this.state;
-    const info = this.state.info as any as VideoInfo;
+    const info = this.state.info as any as Info;
 
     if (!info) return (
       <div style={{ paddingTop: 'calc(50vh - 31px)' }}>
@@ -92,6 +118,11 @@ class App extends React.Component<Props, State> {
           More details read here: <a href="https://web.dev/fetch-upload-streaming" target="_blank">https://web.dev/fetch-upload-streaming</a>
         </p>
       </Message> : null}
+
+      {(s.attachments.length > 0) ? <>
+        <Divider horizontal>Available Attachments</Divider>
+        <Attachments attachments={s.attachments} swarmGateway={s.swarmGatewayUrl} />
+      </> : null}
 
       <Divider horizontal>You're uploading the video</Divider>
 

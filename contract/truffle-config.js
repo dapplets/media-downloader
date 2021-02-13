@@ -2,11 +2,6 @@ const HDWalletProvider = require("@truffle/hdwallet-provider");
 const config = require('./config.json');
 
 module.exports = {
-  compilers: {
-    solc: {
-      version: '^0.6.6'
-    }
-  },
   networks: {
     development: {
       host: "127.0.0.1",

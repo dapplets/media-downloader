@@ -12,7 +12,7 @@ export interface Author {
     title: string;
 }
 
-export interface Info {
+export interface VideoInfo {
     id: string;
     type: string;
     title: string;
@@ -44,24 +44,25 @@ export interface Format {
     stats: Stats;
 }
 
-export interface VideoInfo {
-    info: Info;
+export interface Info {
+    info: VideoInfo;
     formats: Format[];
     swarmGatewayUrl: string;
+    contractAddress: string;
 }
 
 class Bridge extends AbstractBridge {
     _subId = 0;
 
-    onInfo(callback: (info: VideoInfo) => void) {
-        this.subscribe('info', (data: VideoInfo) => {
+    onInfo(callback: (info: Info) => void) {
+        this.subscribe('info', (data: Info) => {
             callback(data);
             return (++this._subId).toString();
         });
     }
 
-    download(url: string) {
-        return this.call('download', url, 'downloaded');
+    download(url: string, filename: string) {
+        return this.call('download', { url, filename }, 'downloaded');
     }
 
     onDownloadStatus(callback: (value: number) => void) {
