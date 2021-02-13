@@ -1,0 +1,23 @@
+{
+    "name": "media-downloader.dapplet-base.eth",
+    "version": "0.1.0",
+    "description": "Download YouTube videos to Swarm and attach them to Twitter",
+    "main": "index.js",
+    "scripts": {
+        "postinstall": "concurrently -c \"red,green,yellow,blue,magenta,cyan\" -n \"adapter,dapplet-youtube,dapplet-twitter,overlay-youtube,overlay-twitter,contract\" \"cd adapter && npm i\" \"cd dapplet-youtube && npm i\" \"cd dapplet-twitter && npm i\" \"cd overlay-youtube && npm i\" \"cd overlay-twitter && npm i\" \"cd contract && npm i\"",
+        "start": "concurrently -c \"red,green,yellow,blue,magenta\" -n \"adapter,dapplet-youtube,dapplet-twitter,overlay-youtube,overlay-twitter\" \"cd adapter && npm start\" \"cd dapplet-youtube && npm start\" \"cd dapplet-twitter && npm start\" \"cd overlay-youtube && npm start\" \"cd overlay-twitter && npm start\""
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/dapplets/media-downloader.git"
+    },
+    "author": "Project Dapplets",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/dapplets/media-downloader/issues"
+    },
+    "homepage": "https://github.com/dapplets/media-downloader#readme",
+    "devDependencies": {
+        "concurrently": "^5.3.0"
+    }
+}

@@ -10,31 +10,14 @@ Next versions of the Media Downloader may download any type of content to Swarm 
 
 Live example is available on YouTube website with installed [Dapplet Extension](https://github.com/dapplets/dapplet-extension).
 
-To start development you need to run four terminals simultaneously:
+To start development you need to execute the following commands:
 
 ```
-cd dapplet-youtube
 npm i
 npm start
 ```
 
-```
-cd dapplet-twitter
-npm i
-npm start
-```
-
-```
-cd adapter
-npm i
-npm start
-```
-
-```
-cd overlay
-npm i
-npm start
-```
+It will launch all projects in parallel, except the smart contract project.
 
 Next to connect two development servers to the extension via popup -> developer tab.
 
@@ -44,7 +27,8 @@ Addresses of dev servers:
 * adapter - `http://localhost:3002/dapplet.json`
 
 Also the dapplet uses the overlay by following address:
-* overlay - `https://localhost:3004`
+* overlay-youtube - `https://localhost:3004`
+* overlay-twitter - `https://localhost:3005`
 
 After that the Media Downloader dapplet will be available in the store of the extension (popup -> dapplets tab).
 
