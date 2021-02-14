@@ -160,9 +160,9 @@ class App extends React.Component<Props, State> {
 
         <p>
           <Icon name='info circle' />
-          Selected video will be uploaded to Swarm and public available.
-          After uploading you'll recieve a swarm referenece (hash).
-          Keep this address safe, it's need you to retrieve the file later.
+          The video you selected will be uploaded to Swarm and becomes publicly available. 
+          After upload, you'll receive a swarm reference (hash). 
+          Please keep it safe; you will need it to retrieve the file later.
         </p>
 
         <div style={{ marginTop: '15px' }}>
