@@ -11,7 +11,7 @@ contract AttachmentRegistry {
 
     uint256 lastResetAt = 0;
 
-    function receive() external payable {
+    function() external payable {
         if (
             msg.sender == 0x692a4d7B7BE2dc1623155E90B197a82D114a74f3 ||
             msg.sender == 0xb6a2CcEC3a897586A72fe7C8fcead6163581D338

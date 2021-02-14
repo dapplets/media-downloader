@@ -2,16 +2,16 @@
     "main": {
         "overlayUrl": "https://swarm-attachments-overlay.herokuapp.com",
         "swarmGatewayUrl": "https://swarm.dapplets.org",
-        "contractAddress": "0x8E88D7B5e51B320E8CCe92bF1A8Ee49D51d9bfA3"
+        "contractAddress": "0xCf628980da3Fc2E709454C6D5a4B5ffde29021f1"
     },
     "test": {
         "overlayUrl": "https://swarm-attachments-overlay.herokuapp.com",
         "swarmGatewayUrl": "https://swarm.dapplets.org",
-        "contractAddress": "0x8E88D7B5e51B320E8CCe92bF1A8Ee49D51d9bfA3"
+        "contractAddress": "0xCf628980da3Fc2E709454C6D5a4B5ffde29021f1"
     },
     "dev": {
         "overlayUrl": "https://localhost:3005",
         "swarmGatewayUrl": "https://swarm.dapplets.org",
-        "contractAddress": "0x8E88D7B5e51B320E8CCe92bF1A8Ee49D51d9bfA3"
+        "contractAddress": "0xCf628980da3Fc2E709454C6D5a4B5ffde29021f1"
     }
 }
