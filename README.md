@@ -9,6 +9,7 @@ Next versions of the Media Downloader may download any type of content to Swarm 
 ## Getting Started
 
 Live example is available on YouTube website with installed [Dapplet Extension](https://github.com/dapplets/dapplet-extension).
+Video demo is available in [docs directory](https://github.com/dapplets/media-downloader/blob/master/docs/demo.mp4).
 
 To start development you need to execute the following commands:
 
