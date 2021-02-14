@@ -85,49 +85,38 @@ export default class TwitterFeature {
                             }
                         },
                         exec: async (ctx, me) => {
+                            try {
+                                me.state = 'LOADING';
 
-                            me.state = 'LOADING';
+                                const overlayUrl = await Core.storage.get('overlayUrl');
+                                const overlay = Core.overlay({ url: overlayUrl, title: 'Media Downloader' });
+                                overlay.send(null); // just open overlay
 
-                            const overlayUrl = await Core.storage.get('overlayUrl');
-                            const overlay = Core.overlay({ url: overlayUrl, title: 'Media Downloader' });
-                            overlay.send(null); // just open overlay
+                                const swarmGatewayUrl = await Core.storage.get('swarmGatewayUrl');
+                                const contractAddress = await Core.storage.get('contractAddress');
 
-                            const swarmGatewayUrl = await Core.storage.get('swarmGatewayUrl');
-                            const contractAddress = await Core.storage.get('contractAddress');
+                                const info = await this.adapter.getCurrentVideoInfo();
 
-                            // ToDo: fix it
-                            let info;
-                            let i = 3;
-                            while (i > 0) {
-                                try {
-                                    info = await ctx.getInfo();
-                                    i = 0;
-                                } catch (err) {
-                                    i--;
-                                    if (i === 0) {
-                                        throw Error(err);
-                                    } else {
-                                        console.error(err);
-                                    }
-                                }
+                                info.swarmGatewayUrl = swarmGatewayUrl;
+                                info.contractAddress = contractAddress;
+
+                                overlay.sendAndListen('info', info, {
+                                    'download': async (_, { message }) => this._download(
+                                        message.url,
+                                        message.filename,
+                                        overlay,
+                                        swarmGatewayUrl,
+                                        me,
+                                        info
+                                    )
+                                });
+
+                                me.state = 'DEFAULT';
+
+                            } catch (err) {
+                                console.error(err);
+                                me.state = "ERROR";
                             }
-
-                            info.swarmGatewayUrl = swarmGatewayUrl;
-                            info.contractAddress = contractAddress;
-
-                            overlay.sendAndListen('info', info, {
-                                'download': async (_, { message }) => this._download(
-                                    message.url,
-                                    message.filename,
-                                    overlay,
-                                    swarmGatewayUrl,
-                                    me,
-                                    info
-                                )
-                            });
-
-                            me.state = 'DEFAULT';
-
                         }
                     },
                     "LOADING": {

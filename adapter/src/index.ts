@@ -27,8 +27,7 @@ export default class TwitterAdapter {
         contextBuilder: (p: any) => ({
             title: p.querySelector('#info-contents h1').innerText,
             views: parseInt(p.querySelector('#info-contents #info-text #count').innerText.match(/[0-9]/g).join('')),
-            videoId: (new URL(document.location.href)).searchParams.get('v'),
-            getInfo: () => window['ytdlr']()
+            videoId: (new URL(document.location.href)).searchParams.get('v')
         })
     }, {
         containerSelector: 'ytd-search',
@@ -78,5 +77,9 @@ export default class TwitterAdapter {
     // ToDo: refactor it
     public detachConfig(feature: IFeature): void {
         this.adapter.detachConfig(feature);
+    }
+
+    public async getCurrentVideoInfo() {
+        return window['ytdlr']();
     }
 }
