@@ -12,7 +12,9 @@ Next versions of the Media Downloader may download any type of content to Swarm 
 
 **Live example** is available on YouTube and Twitter websites with installed [Dapplet Extension](https://github.com/dapplets/dapplet-extension).
 
-**Video demo** is available in [docs directory](https://github.com/dapplets/media-downloader/raw/master/docs/demo.mp4).
+[**Video demo**](https://github.com/dapplets/media-downloader/raw/master/docs/demo.mp4) is available in docs directory.
+
+[![Watch the video](https://github.com/dapplets/media-downloader/raw/master/docs/demo-thumbnail.png)](https://github.com/dapplets/media-downloader/raw/master/docs/demo.mp4)
 
 ### Development
 
