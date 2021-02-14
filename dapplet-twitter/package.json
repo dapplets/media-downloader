@@ -1,6 +1,6 @@
 {
   "name": "swarm-attachments.dapplet-base.eth",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Attach files from Swarm to tweets",
   "main": "lib/index.js",
   "scripts": {

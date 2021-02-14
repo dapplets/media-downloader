@@ -2,7 +2,9 @@ import { } from '@dapplets/dapplet-extension'
 //import { T_TwitterFeatureConfig, ITwitterAdapter } from '@dapplets/twitter-adapter'
 import DOWNLOAD_ICON from './icons/download-24px.svg';
 import DONE_ICON from './icons/done-24px.svg';
+import THUMBNAIL_IMG from './icons/thumbnail.png';
 import abi from './abi';
+import { AutoProperties, Connection } from '@dapplets/dapplet-extension/lib/inpage/connection';
 
 async function digestMessage(message) {
     const msgUint8 = new TextEncoder().encode(message);                           // encode as (utf-8) Uint8Array
@@ -21,9 +23,31 @@ export default class TwitterFeature {
         @Inject("youtube-adapter.dapplet-base.eth")
         public adapter: any //ITwitterAdapter;
     ) {
-        const { button, badge } = this.adapter.exports;
+        const { button, badge, result } = this.adapter.exports;
 
         this.adapter.attachConfig({
+            SEARCH_RESULTS: [
+                result({
+                    "DEFAULT": {
+                        title: "RUSSIAN CYBERPUNK FARM",
+                        views: "8.8M",
+                        date: "2 months ago",
+                        channel: "birchpunk",
+                        description: "cyberpunk #russia #robots #birchpunk They say that Russia is a technically backward country, there are no roads, robotics do not ...",
+                        img: THUMBNAIL_IMG,
+                        badges: [{
+                            label: 'AVAILABLE IN FAIRTUBE',
+                            color: '#ffc300'
+                        }],
+                        // init: (ctx, me) => {
+
+                        // },
+                        exec: (ctx, me) => {
+                            window.open('https://swarm.dapplets.org/files/6995fd78ab680c53d6cc4003082e5cf9b5225644ae6e0f1892ecf966075f0248', '_blank')
+                        }
+                    }
+                })
+            ],
             SEARCH_RESULT_BADGES: [
                 badge({
                     "DEFAULT": {
@@ -71,119 +95,38 @@ export default class TwitterFeature {
                             const swarmGatewayUrl = await Core.storage.get('swarmGatewayUrl');
                             const contractAddress = await Core.storage.get('contractAddress');
 
-                            const info = await ctx.getInfo();
+                            // ToDo: fix it
+                            let info;
+                            let i = 3;
+                            while (i > 0) {
+                                try {
+                                    info = await ctx.getInfo();
+                                    i = 0;
+                                } catch (err) {
+                                    i--;
+                                    if (i === 0) {
+                                        throw Error(err);
+                                    } else {
+                                        console.error(err);
+                                    }
+                                }
+                            }
+
                             info.swarmGatewayUrl = swarmGatewayUrl;
                             info.contractAddress = contractAddress;
 
                             overlay.sendAndListen('info', info, {
-                                'download': async (op, { type, message }) => {
-                                    const { url, filename } = message;
-
-                                    const supportsRequestStreams = !new Request('', {
-                                        body: new ReadableStream(),
-                                        method: 'POST',
-                                    }).headers.has('Content-Type');
-
-                                    if (supportsRequestStreams) {
-
-                                        const response = await fetch(url);
-
-                                        var loaded = 0
-                                        var size = +response.headers.get('Content-Length')
-
-                                        const { readable, writable } = new TransformStream({
-                                            transform(chunk, controller) {
-                                                loaded += chunk.length;
-                                                overlay.send('download_status', loaded / size);
-                                                overlay.send('upload_status', loaded / size);
-                                                controller.enqueue(chunk);
-                                            }
-                                        });
-
-                                        response.body.pipeTo(writable);
-
-                                        // Post to url2:
-                                        const response2 = await fetch(swarmGatewayUrl + '/files?name=' + encodeURIComponent(filename), {
-                                            method: 'POST',
-                                            body: readable, //.pipeThrough(transformStream2),
-                                            headers: {
-                                                "Content-Type": response.headers.get('Content-Type')
-                                            }
-                                        });
-
-                                        const json2 = await response2.json();
-                                        overlay.send('downloaded', {
-                                            reference: json2.reference,
-                                            tag: response2.headers.get('Swarm-Tag') ?? response2.headers.get('Swarm-Tag-Uid')
-                                        });
-                                        digestMessage(info.info.id).then(async (x) => {
-                                            await this._addAttachment('0x' + x, '0x' + json2.reference)
-                                            me.label = 'AVAILABLE IN SWARM';
-                                        });
-                                    } else {
-                                        const response = await fetch(url);
-                                        var loaded = 0
-                                        var size = +response.headers.get('Content-Length')
-
-                                        const { readable, writable } = new TransformStream({
-                                            transform(chunk, controller) {
-                                                loaded += chunk.length;
-                                                overlay.send('download_status', loaded / size);
-                                                controller.enqueue(chunk);
-                                            }
-                                        });
-
-                                        response.body.pipeTo(writable);
-                                        const blob = await new Response(readable, {
-                                            headers: {
-                                                'Content-Type': response.headers.get('Content-Type')
-                                            }
-                                        }).blob();
-
-                                        var xhr = new XMLHttpRequest();
-                                        xhr.open('POST', swarmGatewayUrl + '/files?name=' + encodeURIComponent(filename), true);
-                                        xhr.onload = (e: any) => {
-                                            const result = JSON.parse(e.target.responseText);
-                                            overlay.send('downloaded', {
-                                                reference: result.reference,
-                                                tag: xhr.getResponseHeader('Swarm-Tag') ?? xhr.getResponseHeader('Swarm-Tag-Uid')
-                                            })
-                                            digestMessage(info.info.id).then(async (x) => {
-                                                await this._addAttachment('0x' + x, '0x' + result.reference)
-                                                me.label = 'AVAILABLE IN SWARM';
-                                            });
-                                        };
-
-                                        xhr.upload.onprogress = function (e) {
-                                            if (e.lengthComputable) {
-                                                overlay.send('upload_status', (e.loaded / e.total));
-                                            }
-                                        };
-
-                                        xhr.send(blob);
-                                    }
-                                },
+                                'download': async (_, { message }) => this._download(
+                                    message.url,
+                                    message.filename,
+                                    overlay,
+                                    swarmGatewayUrl,
+                                    me,
+                                    info
+                                )
                             });
 
                             me.state = 'DEFAULT';
-
-                            // me.state = 'DOWNLOADING';
-
-                            // const url = info.formats[info.formats.length - 1].url;
-                            // const resp1 = await fetch(url);
-                            // const blob = await resp1.blob();
-
-                            // me.state = 'UPLOADING';
-
-                            // const resp2 = await fetch('https://gateway.ethswarm.org/files', {
-                            //     method: 'POST',
-                            //     body: blob
-                            // });
-
-                            // const json = await resp2.json();
-                            // alert(json.reference);
-
-                            // me.state = 'DONE';
 
                         }
                     },
@@ -193,21 +136,9 @@ export default class TwitterFeature {
                         disabled: true,
                         loading: true
                     },
-                    "DOWNLOADING": {
+                    "ERROR": {
                         img: DOWNLOAD_ICON,
-                        label: 'DOWNLOADING',
-                        disabled: true,
-                        loading: true
-                    },
-                    "UPLOADING": {
-                        img: DOWNLOAD_ICON,
-                        label: 'UPLOADING',
-                        disabled: true,
-                        loading: true
-                    },
-                    "DONE": {
-                        img: DONE_ICON,
-                        label: 'DONE',
+                        label: 'ERROR',
                         exec: (_, me) => me.state = 'DEFAULT'
                     }
                 })
@@ -241,5 +172,91 @@ export default class TwitterFeature {
         }
 
         return this._contract;
+    }
+
+    private async _download(url: string, filename: string, overlay: AutoProperties<unknown> & Connection, swarmGatewayUrl: string, me: any, info: any) {
+        const supportsRequestStreams = !new Request('', {
+            body: new ReadableStream(),
+            method: 'POST',
+        }).headers.has('Content-Type');
+
+        if (supportsRequestStreams) {
+
+            const response = await fetch(url);
+
+            var loaded = 0
+            var size = +response.headers.get('Content-Length')
+
+            const { readable, writable } = new TransformStream({
+                transform(chunk, controller) {
+                    loaded += chunk.length;
+                    overlay.send('download_status', loaded / size);
+                    overlay.send('upload_status', loaded / size);
+                    controller.enqueue(chunk);
+                }
+            });
+
+            response.body.pipeTo(writable);
+
+            // Post to url2:
+            const response2 = await fetch(swarmGatewayUrl + '/files?name=' + encodeURIComponent(filename), {
+                method: 'POST',
+                body: readable, //.pipeThrough(transformStream2),
+                headers: {
+                    "Content-Type": response.headers.get('Content-Type')
+                }
+            });
+
+            const json2 = await response2.json();
+            overlay.send('downloaded', {
+                reference: json2.reference,
+                tag: response2.headers.get('Swarm-Tag') ?? response2.headers.get('Swarm-Tag-Uid')
+            });
+            digestMessage(info.info.id).then(async (x) => {
+                await this._addAttachment('0x' + x, '0x' + json2.reference)
+                me.label = 'AVAILABLE IN SWARM';
+            });
+        } else {
+            const response = await fetch(url);
+            var loaded = 0
+            var size = +response.headers.get('Content-Length')
+
+            const { readable, writable } = new TransformStream({
+                transform(chunk, controller) {
+                    loaded += chunk.length;
+                    overlay.send('download_status', loaded / size);
+                    controller.enqueue(chunk);
+                }
+            });
+
+            response.body.pipeTo(writable);
+            const blob = await new Response(readable, {
+                headers: {
+                    'Content-Type': response.headers.get('Content-Type')
+                }
+            }).blob();
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', swarmGatewayUrl + '/files?name=' + encodeURIComponent(filename), true);
+            xhr.onload = (e: any) => {
+                const result = JSON.parse(e.target.responseText);
+                overlay.send('downloaded', {
+                    reference: result.reference,
+                    tag: xhr.getResponseHeader('Swarm-Tag') ?? xhr.getResponseHeader('Swarm-Tag-Uid')
+                })
+                digestMessage(info.info.id).then(async (x) => {
+                    await this._addAttachment('0x' + x, '0x' + result.reference)
+                    me.label = 'AVAILABLE IN SWARM';
+                });
+            };
+
+            xhr.upload.onprogress = function (e) {
+                if (e.lengthComputable) {
+                    overlay.send('upload_status', (e.loaded / e.total));
+                }
+            };
+
+            xhr.send(blob);
+        }
     }
 }
