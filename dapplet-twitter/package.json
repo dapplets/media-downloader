@@ -1,7 +1,7 @@
 {
-  "name": "swarm-attachments.dapplet-base.eth",
+  "name": "swarm-hackathon-attachments.dapplet-base.eth",
   "version": "0.1.1",
-  "description": "Attach files from Swarm to tweets",
+  "description": "Attach Swarm files to tweets. Liberate Data Week Hackathon.",
   "main": "lib/index.js",
   "scripts": {
     "start": "rollup -w --config rollup.config.js",
