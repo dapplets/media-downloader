@@ -43,7 +43,7 @@ export default class TwitterFeature {
 
                         // },
                         exec: (ctx, me) => {
-                            window.open('https://swarm.dapplets.org/files/6995fd78ab680c53d6cc4003082e5cf9b5225644ae6e0f1892ecf966075f0248', '_blank')
+                            window.open('https://gateway.ethswarm.org/files/6995fd78ab680c53d6cc4003082e5cf9b5225644ae6e0f1892ecf966075f0248', '_blank')
                         }
                     }
                 })
@@ -193,7 +193,8 @@ export default class TwitterFeature {
                 body: readable, //.pipeThrough(transformStream2),
                 headers: {
                     "Content-Type": response.headers.get('Content-Type')
-                }
+                },
+                //credentials: 'include'
             });
 
             const json2 = await response2.json();
@@ -226,6 +227,7 @@ export default class TwitterFeature {
             }).blob();
 
             var xhr = new XMLHttpRequest();
+            // xhr.withCredentials = true;
             xhr.open('POST', swarmGatewayUrl + '/files?name=' + encodeURIComponent(filename), true);
             xhr.onload = (e: any) => {
                 const result = JSON.parse(e.target.responseText);

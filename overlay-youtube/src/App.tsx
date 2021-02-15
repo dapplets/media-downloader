@@ -181,7 +181,7 @@ class App extends React.Component<Props, State> {
       {(s.swarmReference) ? <Message success style={{ wordBreak: 'break-word' }}>
         <Message.Header>Uploaded</Message.Header>
         <p>
-          The video is uploaded and will be available by this URL: <a target='_blank' href={`${s.swarmGatewayUrl}/files/${s.swarmReference!}`}>{s.swarmGatewayUrl}/files/{s.swarmReference}</a>
+          The video is uploaded and will be available <b>later</b> by this URL: <a target='_blank' href={`${s.swarmGatewayUrl}/files/${s.swarmReference!}`}>{s.swarmGatewayUrl}/files/{s.swarmReference}</a>
         </p>
         <p>Swarm Tag: {s.tag}</p>
       </Message> : null}
