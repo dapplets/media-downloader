@@ -157,7 +157,7 @@ export default class TwitterFeature {
     private async _getContract() {
         if (!this._contract) {
             const address = await Core.storage.get('contractAddress');
-            this._contract = Core.contract(address, abi);
+            this._contract = Core.contract('ethereum', address, abi);
         }
 
         return this._contract;

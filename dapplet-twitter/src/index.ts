@@ -35,7 +35,7 @@ export default class TwitterFeature {
 
                             overlay.sendAndListen('info', { ...ctx, swarmGatewayUrl, contractAddress }, {
                                 'get_account': async () => {
-                                    const wallet = await Core.wallet();
+                                    const wallet = await Core.wallet({ type: 'ethereum', network: 'rinkeby' });
                                     wallet.sendAndListen('eth_accounts', [], {
                                         result: (op, { type, data }) => overlay.send('current_account', data[0])
                                     });
@@ -76,7 +76,7 @@ export default class TwitterFeature {
     private async _getContract() {
         if (!this._contract) {
             const address = await Core.storage.get('contractAddress');
-            this._contract = Core.contract(address, abi);
+            this._contract = Core.contract('ethereum', address, abi);
         }
 
         return this._contract;
