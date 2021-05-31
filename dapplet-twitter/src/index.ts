@@ -15,14 +15,17 @@ export default class TwitterFeature {
 
     private _contract;
 
-    constructor(
-        @Inject("twitter-adapter.dapplet-base.eth")
-        public adapter: any //ITwitterAdapter;
-    ) {
+    @Inject("twitter-adapter.dapplet-base.eth")
+    public adapter: any //ITwitterAdapter;
+
+    public async activate() {
+        const address = await Core.storage.get('contractAddress');
+        this._contract = Core.contract('ethereum', address, abi);
+
         const { button, badge } = this.adapter.exports;
 
         this.adapter.attachConfig({
-            POST_SOUTH: [
+            POST: () => [
                 button({
                     "DEFAULT": {
                         img: ATTACHMENT_ICON,
@@ -31,11 +34,12 @@ export default class TwitterFeature {
                             const overlayUrl = await Core.storage.get('overlayUrl');
                             const swarmGatewayUrl = await Core.storage.get('swarmGatewayUrl');
                             const contractAddress = await Core.storage.get('contractAddress');
-                            const overlay = Core.overlay({ url: overlayUrl, title: 'Swarm Attachments' });
+                            const overlay = await Core.overlay({ url: overlayUrl, title: 'Swarm Attachments' });
 
                             overlay.sendAndListen('info', { ...ctx, swarmGatewayUrl, contractAddress }, {
                                 'get_account': async () => {
                                     const wallet = await Core.wallet({ type: 'ethereum', network: 'rinkeby' });
+                                    if (!await wallet.isConnected()) await wallet.connect();
                                     wallet.sendAndListen('eth_accounts', [], {
                                         result: (op, { type, data }) => overlay.send('current_account', data[0])
                                     });
@@ -54,32 +58,8 @@ export default class TwitterFeature {
         });
     }
 
-    public activate() {
-        this.adapter.attachFeature(this);
-    }
-
-    public deactivate() {
-        this.adapter.detachFeature(this);
-    }
-
     private async _getAttachments(key: string) {
-        const contract = await this._getContract();
-        return contract.getByKey(key);
-    }
-
-    private async _addAttachment(key: string, ref: string) {
-        const contract = await this._getContract();
-        const tx = await contract.add(key, ref);
-        return tx.wait();
-    }
-
-    private async _getContract() {
-        if (!this._contract) {
-            const address = await Core.storage.get('contractAddress');
-            this._contract = Core.contract('ethereum', address, abi);
-        }
-
-        return this._contract;
+        return this._contract.getByKey(key);
     }
 
     private async _getLabelForTweet(videoId: string) {
