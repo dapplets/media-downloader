@@ -19,14 +19,18 @@ export default class TwitterFeature {
 
     private _contract;
 
-    constructor(
-        @Inject("youtube-adapter.dapplet-base.eth")
-        public adapter: any //ITwitterAdapter;
-    ) {
+    @Inject("youtube-adapter.dapplet-base.eth")
+    public adapter: any //ITwitterAdapter;
+
+    public async activate() {
+
+        const address = await Core.storage.get('contractAddress');
+        this._contract = Core.contract('ethereum', address, abi);
+
         const { button, badge, result } = this.adapter.exports;
 
         this.adapter.attachConfig({
-            SEARCH_RESULTS: [
+            SEARCH_RESULT_GROUP: () => [
                 result({
                     "DEFAULT": {
                         title: "RUSSIAN CYBERPUNK FARM",
@@ -48,7 +52,7 @@ export default class TwitterFeature {
                     }
                 })
             ],
-            SEARCH_RESULT_BADGES: [
+            SEARCH_RESULT: () => [
                 badge({
                     "DEFAULT": {
                         hidden: true,
@@ -66,7 +70,7 @@ export default class TwitterFeature {
                     }
                 })
             ],
-            MENU: [
+            VIDEO: () => [
                 button({
                     initial: "DEFAULT",
                     "DEFAULT": {
@@ -135,32 +139,13 @@ export default class TwitterFeature {
         });
     }
 
-    public activate() {
-        this.adapter.attachFeature(this);
-    }
-
-    public deactivate() {
-        this.adapter.detachFeature(this);
-    }
-
     private async _getAttachments(key: string) {
-        const contract = await this._getContract();
-        return contract.getByKey(key);
+        return this._contract.getByKey(key);
     }
 
     private async _addAttachment(key: string, ref: string) {
-        const contract = await this._getContract();
-        const tx = await contract.add(key, ref);
+        const tx = await this._contract.add(key, ref);
         return tx.wait();
-    }
-
-    private async _getContract() {
-        if (!this._contract) {
-            const address = await Core.storage.get('contractAddress');
-            this._contract = Core.contract('ethereum', address, abi);
-        }
-
-        return this._contract;
     }
 
     private async _download(url: string, filename: string, overlay: AutoProperties<unknown> & Connection, swarmGatewayUrl: string, me: any, info: any) {
