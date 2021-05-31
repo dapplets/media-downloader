@@ -15,44 +15,50 @@ export default class TwitterAdapter {
         result: this.adapter.createWidgetFactory(Result)
     });
 
-    public config = [{
-        containerSelector: 'ytd-watch-flexy #primary',
-        contextSelector: "#primary-inner",
-        insPoints: {
-            MENU: {
-                selector: "#info-contents #top-level-buttons ytd-button-renderer",
-                insert: 'begin'
-            }
-        },
-        contextBuilder: (p: any) => ({
-            title: p.querySelector('#info-contents h1').innerText,
-            views: parseInt(p.querySelector('#info-contents #info-text #count').innerText.match(/[0-9]/g).join('')),
-            videoId: (new URL(document.location.href)).searchParams.get('v')
-        })
-    }, {
-        containerSelector: 'ytd-search',
-        contextSelector: "ytd-video-renderer",
-        insPoints: {
-            SEARCH_RESULT_BADGES: {
-                selector: "#badges",
-                insert: 'inside'
-            }
-        },
-        contextBuilder: (p: any) => {
-            p.querySelector('#badges')?.removeAttribute("hidden"); // make badges div visible
-
-            return ({
-                title: p.querySelector('#title-wrapper h3').innerText,
-                videoId: p.querySelector('#title-wrapper h3 a').getAttribute('href').substring(9)
+    public config = {
+        VIDEO: {
+            containerSelector: 'ytd-watch-flexy #primary',
+            contextSelector: "#primary-inner",
+            insPoints: {
+                MENU: {
+                    selector: "#info-contents #menu ytd-menu-renderer #top-level-buttons-computed",
+                    insert: 'end'
+                }
+            },
+            contextBuilder: (p: any) => ({
+                id: (new URL(document.location.href)).searchParams.get('v'),
+                title: p.querySelector('#info-contents h1').innerText,
+                views: parseInt(p.querySelector('#info-contents #info-text #count').innerText.match(/[0-9]/g).join('')),
+                videoId: (new URL(document.location.href)).searchParams.get('v')
             })
-        }
-    }, {
-        containerSelector: 'ytd-search',
-        contextSelector: "#container",
-        insPoints: {
-            SEARCH_RESULTS: {
-                selector: "ytd-video-renderer",
-                insert: 'begin'
+        },
+        SEARCH_RESULT: {
+            containerSelector: 'ytd-search',
+            contextSelector: "ytd-video-renderer",
+            insPoints: {
+                SEARCH_RESULT_BADGES: {
+                    selector: "#badges",
+                    insert: 'inside'
+                }
+            },
+            contextBuilder: (p: any) => {
+                p.querySelector('#badges')?.removeAttribute("hidden"); // make badges div visible
+
+                return ({
+                    id: p.querySelector('#title-wrapper h3 a').getAttribute('href').substring(9),
+                    title: p.querySelector('#title-wrapper h3').innerText,
+                    videoId: p.querySelector('#title-wrapper h3 a').getAttribute('href').substring(9)
+                })
+            }
+        },
+        SEARCH_RESULT_GROUP: {
+            containerSelector: 'ytd-search',
+            contextSelector: "#container",
+            insPoints: {
+                SEARCH_RESULTS: {
+                    selector: "ytd-video-renderer",
+                    insert: 'begin'
+                }
             }
         },
         contextBuilder: (p: any) => {
@@ -60,7 +66,7 @@ export default class TwitterAdapter {
                 search: document.querySelector('#search #search')?.['value']
             })
         }
-    }];
+    };
 
     constructor(
         @Inject("dynamic-adapter.dapplet-base.eth")

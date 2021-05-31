@@ -20,6 +20,10 @@ export class Badge {
     public state: IBadgeState;
     insPointName: string;
 
+    public static contextInsPoints = {
+        SEARCH_RESULT: 'SEARCH_RESULT_BADGES'
+    }
+
     public mount() {
         if (!this.el) this._createElement();
 

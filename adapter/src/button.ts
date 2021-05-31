@@ -18,6 +18,10 @@ export class Button {
     public state: IButtonState;
     insPointName: string;
 
+    public static contextInsPoints = {
+        VIDEO: 'MENU'
+    }
+
     public mount() {
         if (!this.el) this._createElement();
 
@@ -169,5 +173,6 @@ export class Button {
         });
         this.mount();
         this.state.init?.(this.state.ctx, this.state);
+        console.log(this);
     }
 }

@@ -21,6 +21,10 @@ export class Result {
     public state: IResultState;
     insPointName: string;
 
+    public static contextInsPoints = {
+        SEARCH_RESULT_GROUP: 'SEARCH_RESULTS'
+    }
+
     public mount() {
         if (!this.el) this._createElement();
 
