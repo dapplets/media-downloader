@@ -15,7 +15,7 @@
   "author": "Project Dapplets",
   "license": "MIT",
   "devDependencies": {
-    "@truffle/hdwallet-provider": "^1.2.2",
-    "truffle": "^5.1.66"
+    "@truffle/hdwallet-provider": "^1.4.0",
+    "truffle": "^5.3.9"
   }
 }
