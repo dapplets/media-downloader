@@ -6,6 +6,7 @@ export type Attachment = {
     mimetype: string;
     filename: string;
     reference: string;
+    isAvailable: boolean;
 }
 
 export class AttachmentService {
@@ -21,7 +22,11 @@ export class AttachmentService {
     public async getAttachments(key: string): Promise<Attachment[]> {
         if (key.indexOf('0x') === -1) key = '0x' + key;
         const references: string[] = await this._contract.getByKey(key);
-        const manifests = await Promise.all(references.map(ref => this._fetchSwarmManifest(ref).then(x => ({ ...x, reference: ref.replace('0x', '') }))));
+        const manifests = await Promise.all(references.map(ref => this._fetchSwarmManifest(ref).then(x => ({ 
+            ...x,
+            reference: ref.replace('0x', ''),
+            isAvailable: !!x
+         }))));
         return manifests.filter(x => !!x) as any;
     }
 

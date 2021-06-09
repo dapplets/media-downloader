@@ -1,52 +1,7 @@
 import AbstractBridge from '@dapplets/dapplet-overlay-bridge';
 
-export interface Thumbnail {
-    url: string;
-    width: number;
-    height: number;
-}
-
-export interface Author {
-    id: string;
-    vanity?: any;
-    title: string;
-}
-
-export interface VideoInfo {
-    id: string;
-    type: string;
-    title: string;
-    description: string;
-    thumbnails: Thumbnail[];
-    date: string;
-    duration: number;
-    views: number;
-    author: Author;
-}
-
-export interface Stats {
-    width?: number;
-    height?: number;
-    bitrate: number;
-    samplerate?: number;
-    channels?: number;
-    size?: number;
-    duration: number;
-    fps?: number;
-}
-
-export interface Format {
-    itag: number;
-    url: string;
-    mime: string;
-    codecs: string[];
-    quality: string;
-    stats: Stats;
-}
-
 export interface Info {
-    info: VideoInfo;
-    formats: Format[];
+    videoInfo: any;
     swarmGatewayUrl: string;
     contractAddress: string;
 }

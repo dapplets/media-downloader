@@ -99,19 +99,20 @@ export default class TwitterFeature {
                                 const swarmGatewayUrl = await Core.storage.get('swarmGatewayUrl');
                                 const contractAddress = await Core.storage.get('contractAddress');
 
-                                const info = await this.adapter.getCurrentVideoInfo();
+                                const videoInfo = await this.adapter.getCurrentVideoInfo();
 
-                                info.swarmGatewayUrl = swarmGatewayUrl;
-                                info.contractAddress = contractAddress;
+                                if (!videoInfo || !videoInfo.videoDetails || !videoInfo.videoDetails.videoId) throw Error('Cannot fetch videoInfo');
 
-                                overlay.sendAndListen('info', info, {
+                                const data = { videoInfo, swarmGatewayUrl, contractAddress };
+
+                                overlay.sendAndListen('info', data, {
                                     'download': async (_, { message }) => this._download(
                                         message.url,
                                         message.filename,
                                         overlay,
                                         swarmGatewayUrl,
                                         me,
-                                        info
+                                        videoInfo.videoDetails.videoId
                                     )
                                 });
 
@@ -148,7 +149,7 @@ export default class TwitterFeature {
         return tx.wait();
     }
 
-    private async _download(url: string, filename: string, overlay: AutoProperties<unknown> & Connection, swarmGatewayUrl: string, me: any, info: any) {
+    private async _download(url: string, filename: string, overlay: AutoProperties<unknown> & Connection, swarmGatewayUrl: string, me: any, videoId: string) {
         const supportsRequestStreams = !new Request('', {
             body: new ReadableStream(),
             method: 'POST',
@@ -187,7 +188,7 @@ export default class TwitterFeature {
                 reference: json2.reference,
                 tag: response2.headers.get('Swarm-Tag') ?? response2.headers.get('Swarm-Tag-Uid')
             });
-            digestMessage(info.info.id).then(async (x) => {
+            digestMessage(videoId).then(async (x) => {
                 await this._addAttachment('0x' + x, '0x' + json2.reference)
                 me.label = 'AVAILABLE IN SWARM';
             });
@@ -220,7 +221,7 @@ export default class TwitterFeature {
                     reference: result.reference,
                     tag: xhr.getResponseHeader('Swarm-Tag') ?? xhr.getResponseHeader('Swarm-Tag-Uid')
                 })
-                digestMessage(info.info.id).then(async (x) => {
+                digestMessage(videoId).then(async (x) => {
                     await this._addAttachment('0x' + x, '0x' + result.reference)
                     me.label = 'AVAILABLE IN SWARM';
                 });

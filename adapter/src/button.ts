@@ -173,6 +173,5 @@ export class Button {
         });
         this.mount();
         this.state.init?.(this.state.ctx, this.state);
-        console.log(this);
     }
 }

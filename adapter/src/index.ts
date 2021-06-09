@@ -3,7 +3,7 @@ import { IFeature } from '@dapplets/dapplet-extension';
 import { IButtonState, Button } from './button';
 import { Badge } from './badge';
 import { Result } from './result';
-import './ytdl.js';
+import ytdl from 'ytdl-core';
 
 @Injectable
 export default class TwitterAdapter {
@@ -86,6 +86,6 @@ export default class TwitterAdapter {
     }
 
     public async getCurrentVideoInfo() {
-        return window['ytdlr']();
+        return ytdl.getInfo(document.location.href);
     }
 }

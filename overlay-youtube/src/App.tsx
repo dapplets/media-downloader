@@ -1,6 +1,6 @@
 import React, { ProfilerOnRenderCallback } from 'react';
 import './App.css';
-import { bridge, Format, Info } from './bridge';
+import { bridge, Info } from './bridge';
 import { Button, Container, Divider, Dropdown, Form, Icon, Item, Loader, Message, Progress, Segment } from 'semantic-ui-react';
 import { AttachmentService, Attachment } from './services/attachment';
 import { digestMessage } from './utils';
@@ -12,9 +12,8 @@ interface Props {
 }
 
 interface State {
-  swarmGatewayUrl: string;
   info: Info | null;
-  quality: string | null;
+  selectedUrl: string | null;
   formatOptions: {
     key: string, text: string, value: string
   }[];
@@ -24,7 +23,7 @@ interface State {
   uploadStatus: number;
   isStreamingSupported: boolean;
   tag: string | null;
-  attachments: Attachment[];
+  hash: string | null;
 }
 
 class App extends React.Component<Props, State> {
@@ -34,9 +33,8 @@ class App extends React.Component<Props, State> {
   constructor(p: Props) {
     super(p);
     this.state = {
-      swarmGatewayUrl: 'https://gateway.ethswarm.org',
       info: null,
-      quality: null,
+      selectedUrl: null,
       formatOptions: [],
       uploading: false,
       swarmReference: null,
@@ -44,24 +42,21 @@ class App extends React.Component<Props, State> {
       uploadStatus: 0,
       isStreamingSupported: !new Request('', { body: new ReadableStream(), method: 'POST' }).headers.has('Content-Type'),
       tag: null,
-      attachments: []
+      hash: null
     };
   }
 
   componentDidMount() {
     bridge.onInfo(async (info) => {
-      this._attachmentService = new AttachmentService(info.contractAddress, info.swarmGatewayUrl);
+      const hash = await digestMessage(info.videoInfo.videoDetails.videoId);
 
-      const hash = await digestMessage(info.info.id);
-      const attachments = await this._attachmentService.getAttachments(hash);
-
-      const formatOptions = info.formats.filter(x => !!x.stats.channels && !!x.stats.width).map((x, i) => ({
+      const formatOptions = info.videoInfo.formats.filter((x: any) => x.hasAudio && x.hasVideo).map((x: any, i: number) => ({
         key: x.url,
-        text: `${x.quality}`,
+        text: `${x.qualityLabel}`,
         value: x.url
-      }))
+      }));
 
-      this.setState({ swarmGatewayUrl: info.swarmGatewayUrl, info, formatOptions, quality: formatOptions[0]?.key, attachments });
+      this.setState({ info, formatOptions, selectedUrl: formatOptions[0]?.key, hash });
 
     });
 
@@ -75,12 +70,12 @@ class App extends React.Component<Props, State> {
 
     this.setState({ uploading: true });
 
-    const qualityName = s.formatOptions.find(x => x.key === s.quality)!.text;
-    const mimeType = s.info!.formats.find(x => x.url === s.quality)!.mime;
+    const qualityName = s.formatOptions.find(x => x.key === s.selectedUrl)!.text;
+    const mimeType = s.info!.videoInfo.formats.find((x: any) => x.url === s.selectedUrl)!.mimeType;
 
-    const url: string = s.quality as any;
+    const url: string = s.selectedUrl as any;
     const extension = mime.getExtension(mimeType); 
-    const filename = `${info.info.author.title} - ${info.info.title} (${qualityName}).${extension}`;
+    const filename = `${info.videoInfo.videoDetails.author.name} - ${info.videoInfo.videoDetails.title} (${qualityName}).${extension}`;
     
     const data = await bridge.download(url, filename);
     this.setState({ uploading: false, swarmReference: data.reference, tag: data.tag })
@@ -119,9 +114,13 @@ class App extends React.Component<Props, State> {
         </p>
       </Message> : null}
 
-      {(s.attachments.length > 0) ? <>
+      {(s.hash && s.info) ? <>
         <Divider horizontal>Available Attachments</Divider>
-        <Attachments attachments={s.attachments} swarmGateway={s.swarmGatewayUrl} />
+        <Attachments 
+          hash={s.hash} 
+          swarmGateway={s.info.swarmGatewayUrl} 
+          contractAddress={s.info.contractAddress} 
+        />
       </> : null}
 
       <Divider horizontal>You're uploading the video</Divider>
@@ -129,13 +128,13 @@ class App extends React.Component<Props, State> {
       <Segment>
         <Item.Group unstackable>
           <Item>
-            <Item.Image size='tiny' src={info.info.thumbnails[0].url} />
+            <Item.Image size='tiny' src={info.videoInfo.videoDetails.thumbnails[0].url} />
 
             <Item.Content>
-              <Item.Header className="item-header">{info.info.title}</Item.Header>
-              <Item.Meta>{info.info.author.title}</Item.Meta>
+              <Item.Header className="item-header">{info.videoInfo.videoDetails.title}</Item.Header>
+              <Item.Meta>{info.videoInfo.videoDetails.author.name}</Item.Meta>
               {/* <Item.Description>{info.info.description}</Item.Description> */}
-              <Item.Extra>{info.info.views} views · {info.info.date}</Item.Extra>
+              <Item.Extra>{info.videoInfo.videoDetails.viewCount} views · {info.videoInfo.videoDetails.uploadDate}</Item.Extra>
             </Item.Content>
           </Item>
         </Item.Group>
@@ -148,12 +147,12 @@ class App extends React.Component<Props, State> {
             selection
             options={s.formatOptions}
             onChange={(e, { value }) => this.setState({
-              quality: value as string,
+              selectedUrl: value as string,
               downloadStatus: 0,
               uploadStatus: 0,
               swarmReference: null
             })}
-            value={s.quality as any as string}
+            value={s.selectedUrl as any as string}
             disabled={s.uploading}
           />
         </Form.Group>
@@ -181,7 +180,7 @@ class App extends React.Component<Props, State> {
       {(s.swarmReference) ? <Message success style={{ wordBreak: 'break-word' }}>
         <Message.Header>Uploaded</Message.Header>
         <p>
-          The video is uploaded and will be available <b>later</b> by this URL: <a target='_blank' href={`${s.swarmGatewayUrl}/files/${s.swarmReference!}`}>{s.swarmGatewayUrl}/files/{s.swarmReference}</a>
+          The video is uploaded and will be available <b>later</b> by this URL: <a target='_blank' href={`${s.info!.swarmGatewayUrl}/files/${s.swarmReference!}`}>{s.info!.swarmGatewayUrl}/files/{s.swarmReference}</a>
         </p>
         <p>Swarm Tag: {s.tag}</p>
       </Message> : null}
