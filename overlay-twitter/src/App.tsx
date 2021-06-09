@@ -83,7 +83,7 @@ class App extends React.Component<Props, State> {
 
       <Divider horizontal>Available Attachments</Divider>
       {(!s.attachmentsLoading) ? <div>
-        <List divided relaxed>
+        {(s.attachments.length > 0) ? <List divided relaxed>
           {s.attachments.map((x, i) =>
             <List.Item key={i} style={{ display: 'flex' }}>
               <List.Icon name='file' verticalAlign='middle' />
@@ -98,7 +98,9 @@ class App extends React.Component<Props, State> {
               </List.Content>
             </List.Item>
           )}
-        </List>
+        </List> : <>
+              No attachments
+        </>}
       </div> : placeholder}
 
       <Divider horizontal>My Files</Divider>
