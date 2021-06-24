@@ -1,6 +1,6 @@
 {
   "name": "swarm-hackathon-attachments.dapplet-base.eth",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Attach Swarm files to tweets. Liberate Data Week Hackathon.",
   "main": "lib/index.js",
   "scripts": {
