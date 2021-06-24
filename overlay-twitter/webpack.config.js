@@ -4,7 +4,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const WebpackAssetsManifest = require('webpack-assets-manifest');
 
 module.exports = {
-    mode: 'development',
+    mode: 'production',
     output: {
         path: path.resolve(__dirname, 'build'),
         clean: true
