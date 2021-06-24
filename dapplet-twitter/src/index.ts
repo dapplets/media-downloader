@@ -31,10 +31,9 @@ export default class TwitterFeature {
                         img: ATTACHMENT_ICON,
                         init: (ctx, me) => this._getLabelForTweet(ctx.id).then(x => me.label = x),
                         exec: async (ctx, me) => {
-                            const overlayUrl = await Core.storage.get('overlayUrl');
                             const swarmGatewayUrl = await Core.storage.get('swarmGatewayUrl');
                             const contractAddress = await Core.storage.get('contractAddress');
-                            const overlay = await Core.overlay({ url: overlayUrl, title: 'Swarm Attachments' });
+                            const overlay = await Core.overlay({ name: 'swarm-hackathon-attachments-overlay', title: 'Swarm Attachments' });
 
                             overlay.sendAndListen('info', { ...ctx, swarmGatewayUrl, contractAddress }, {
                                 'get_account': async () => {

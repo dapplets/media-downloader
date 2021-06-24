@@ -4,49 +4,39 @@
   "private": true,
   "dependencies": {
     "@dapplets/dapplet-overlay-bridge": "^0.1.0",
-    "@ethersphere/bee-js": "^0.11.0",
-    "@types/node": "^15.12.2",
-    "@types/react": "^17.0.11",
-    "@types/react-dom": "^17.0.7",
-    "ethers": "^5.3.0",
+    "@ethersphere/bee-js": "^0.12.0",
+    "ethers": "^5.3.1",
     "mime": "^2.5.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^2.0.3",
-    "typescript": "^4.3.2",
+    "typescript": "^4.3.4",
     "web-vitals": "^2.0.1"
   },
-  "homepage": "./",
   "scripts": {
-    "start": "cross-env HTTPS=true PORT=3005 BROWSER=none react-scripts start",
-    "build": "react-scripts build",
-    "eject": "react-scripts eject",
-    "archive": "tar -C build -cvf temp.tar *",
-    "swarm:upload": "curl -X POST -H \"Content-Type: application/x-tar\" -H \"Swarm-Index-Document: index.html\" -H \"Swarm-Error-Document: index.html\" --data-binary @temp.tar https://gateway.ethswarm.org/dirs",
-    "deploy": "npm run build && npm run archive && npm run swarm:upload"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "start": "webpack serve",
+    "build": "webpack"
   },
   "devDependencies": {
     "@types/mime": "^2.0.3",
-    "cross-env": "^7.0.3"
+    "@types/node": "^15.12.4",
+    "@types/react": "^17.0.11",
+    "@types/react-dom": "^17.0.8",
+    "@types/webpack": "^5.28.0",
+    "@types/webpack-dev-server": "^3.11.4",
+    "cross-env": "^7.0.3",
+    "css-loader": "^5.2.6",
+    "env-cmd": "^10.1.0",
+    "file-loader": "^6.2.0",
+    "fork-ts-checker-webpack-plugin": "^6.2.12",
+    "html-webpack-plugin": "^5.3.2",
+    "style-loader": "^2.0.0",
+    "ts-loader": "^9.2.3",
+    "typescript": "^4.3.4",
+    "webpack": "^5.40.0",
+    "webpack-assets-manifest": "^5.0.6",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2"
   }
 }
