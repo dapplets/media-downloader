@@ -17,7 +17,7 @@ export default class TwitterAdapter {
 
     public config = {
         VIDEO: {
-            containerSelector: 'ytd-watch-flexy #primary',
+            containerSelector: 'ytd-watch-flexy:not([hidden]) #primary',
             contextSelector: "#primary-inner",
             insPoints: {
                 MENU: {
