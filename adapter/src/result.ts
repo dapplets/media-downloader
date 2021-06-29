@@ -14,6 +14,7 @@ export interface IResultState {
     init: (ctx: any, me: IResultState) => void;
     ctx: any;
     insPointName: string;
+    theme: "DARK" | "LIGHT";
 }
 
 export class Result {
@@ -28,7 +29,7 @@ export class Result {
     public mount() {
         if (!this.el) this._createElement();
 
-        const { img, title, hidden, views, date, channel, description, badges } = this.state;
+        const { img, title, hidden, views, date, channel, description, badges, theme } = this.state;
 
         if (hidden) {
             this.el.innerHTML = '';
@@ -38,7 +39,7 @@ export class Result {
                 <div style="display: flex; cursor: pointer; margin-top: 16px;">
                     <img style="display: block; margin-right: 16px; width: 360px; height: 202px;" width="360px" height="202px" src="${img}" />
                     <div style="flex: auto;">
-                        <div style="font-size: 18px; font-weight: 400; line-height: 24px;">${title}</div>
+                        <div style="font-size: 18px; font-weight: 400; line-height: 24px; ${(theme === "DARK") ? "color: #fff;" : ''}">${title}</div>
                         <div style="font-size: 13px; font-weight: 400; line-height: 18px; color: rgb(96, 96, 96);">${views} views · ${date}</div>
                         <div style="font-size: 13px; font-weight: 400; line-height: 18px; color: rgb(96, 96, 96); margin: 10px 0;">${channel}</div>
                         <div style="font-size: 13px; font-weight: 400; line-height: 18px; color: rgb(96, 96, 96);">${description}</div>

@@ -30,7 +30,8 @@ export default class TwitterAdapter {
                 title: p.querySelector('#info-contents h1').innerText,
                 views: parseInt(p.querySelector('#info-contents #info-text #count').innerText.match(/[0-9]/g).join('')),
                 videoId: (new URL(document.location.href)).searchParams.get('v')
-            })
+            }),
+            theme: this._getTheme
         },
         SEARCH_RESULT: {
             containerSelector: 'ytd-search',
@@ -49,7 +50,8 @@ export default class TwitterAdapter {
                     title: p.querySelector('#title-wrapper h3').innerText,
                     videoId: p.querySelector('#title-wrapper h3 a').getAttribute('href').substring(9)
                 })
-            }
+            },
+            theme: this._getTheme
         },
         SEARCH_RESULT_GROUP: {
             containerSelector: 'ytd-search',
@@ -59,12 +61,13 @@ export default class TwitterAdapter {
                     selector: "ytd-video-renderer",
                     insert: 'begin'
                 }
-            }
-        },
-        contextBuilder: (p: any) => {
-            return ({
-                search: document.querySelector('#search #search')?.['value']
-            })
+            },
+            contextBuilder: (p: any) => {
+                return ({
+                    search: document.querySelector('#search #search')?.['value']
+                })
+            },
+            theme: this._getTheme
         }
     };
 
@@ -87,5 +90,10 @@ export default class TwitterAdapter {
 
     public async getCurrentVideoInfo() {
         return ytdl.getInfo(document.location.href);
+    }
+
+    private _getTheme() {
+        const isDark = document.querySelector('html').getAttribute('dark') === 'true';
+        return (isDark) ? "DARK" : "LIGHT";
     }
 }
