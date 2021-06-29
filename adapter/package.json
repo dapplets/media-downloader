@@ -21,6 +21,6 @@
     "rollup-plugin-serve": "^1.1.0",
     "tslib": "^2.2.0",
     "typescript": "^4.3.2",
-    "ytdl-core": "github:fent/node-ytdl-core#d1f535712410eebd79a7468abd07d94f8c4ebe5a"
+    "ytdl-core": "^4.8.3"
   }
 }
