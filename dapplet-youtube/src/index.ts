@@ -96,6 +96,7 @@ export default class TwitterFeature {
                                 overlay.send(null); // just open overlay
 
                                 const swarmGatewayUrl = await Core.storage.get('swarmGatewayUrl');
+                                const swarmPostageStampId = await Core.storage.get('swarmPostageStampId');
                                 const contractAddress = await Core.storage.get('contractAddress');
 
                                 const videoInfo = await this.adapter.getCurrentVideoInfo();
@@ -111,7 +112,8 @@ export default class TwitterFeature {
                                         overlay,
                                         swarmGatewayUrl,
                                         me,
-                                        videoInfo.videoDetails.videoId
+                                        videoInfo.videoDetails.videoId,
+                                        swarmPostageStampId
                                     )
                                 });
 
@@ -148,7 +150,7 @@ export default class TwitterFeature {
         return tx.wait();
     }
 
-    private async _download(url: string, filename: string, overlay: AutoProperties<unknown> & Connection, swarmGatewayUrl: string, me: any, videoId: string) {
+    private async _download(url: string, filename: string, overlay: AutoProperties<unknown> & Connection, swarmGatewayUrl: string, me: any, videoId: string, swarmPostageStampId: string) {
         const supportsRequestStreams = !new Request('', {
             body: new ReadableStream(),
             method: 'POST',
@@ -173,11 +175,13 @@ export default class TwitterFeature {
             response.body.pipeTo(writable);
 
             // Post to url2:
-            const response2 = await fetch(swarmGatewayUrl + '/files?name=' + encodeURIComponent(filename), {
+            const response2 = await fetch(swarmGatewayUrl + '/bzz?name=' + encodeURIComponent(filename), {
                 method: 'POST',
                 body: readable, //.pipeThrough(transformStream2),
                 headers: {
-                    "Content-Type": response.headers.get('Content-Type')
+                    "Content-Type": response.headers.get('Content-Type'),
+                    "swarm-postage-batch-id": swarmPostageStampId,
+                    "swarm-collection": 'false'
                 },
                 //credentials: 'include'
             });
@@ -213,7 +217,10 @@ export default class TwitterFeature {
 
             var xhr = new XMLHttpRequest();
             // xhr.withCredentials = true;
-            xhr.open('POST', swarmGatewayUrl + '/files?name=' + encodeURIComponent(filename), true);
+            xhr.open('POST', swarmGatewayUrl + '/bzz?name=' + encodeURIComponent(filename), true);
+            xhr.setRequestHeader('swarm-postage-batch-id', swarmPostageStampId);
+            xhr.setRequestHeader('swarm-collection', 'false');
+            xhr.setRequestHeader('Content-Type', response.headers.get('Content-Type'));
             xhr.onload = (e: any) => {
                 const result = JSON.parse(e.target.responseText);
                 overlay.send('downloaded', {

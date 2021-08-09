@@ -1,18 +1,18 @@
 {
     "type": "object",
     "required": [
-        "overlayUrl",
         "swarmGatewayUrl",
+        "swarmPostageStampId",
         "contractAddress"
     ],
     "properties": {
-        "overlayUrl": {
-            "type": "string",
-            "title": "Overlay URL"
-        },
         "swarmGatewayUrl": {
             "type": "string",
             "title": "Swarm Gateway URL"
+        },
+        "swarmPostageStampId": {
+            "type": "string",
+            "title": "Swarm Postage Stamp ID"
         },
         "contractAddress": {
             "type": "string",

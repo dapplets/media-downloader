@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@dapplets/dapplet-overlay-bridge": "^0.1.0",
-    "@ethersphere/bee-js": "^0.11.0",
+    "@ethersphere/bee-js": "^1.1.1",
     "ethers": "^5.3.0",
     "mime": "^2.5.2",
     "react": "^17.0.2",
