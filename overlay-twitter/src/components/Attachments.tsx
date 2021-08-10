@@ -34,7 +34,7 @@ export class Attachments extends React.Component<Props, State> {
                         overflow: 'hidden',
                         wordBreak: 'break-word'
                     }}>
-                        <List.Header as='a' href={p.swarmGateway + '/files/' + x.reference} target="_blank">{x.filename}</List.Header>
+                        <List.Header as='a' href={p.swarmGateway + '/bzz/' + x.reference} target="_blank">{x.filename}</List.Header>
                         {/* <List.Description as='a'>{x.mimetype}</List.Description> */}
                     </List.Content>
                     {(p.onAttachmentClick) ?

@@ -69,7 +69,7 @@ export class Attachments extends React.Component<Props, State> {
               <List.Content>
                 <List.Header
                   as="a"
-                  href={p.swarmGateway + "/files/" + x.reference}
+                  href={p.swarmGateway + "/bzz/" + x.reference}
                   target="_blank"
                   style={{ wordBreak: "break-word" }}
                 >

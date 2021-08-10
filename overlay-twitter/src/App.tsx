@@ -93,7 +93,7 @@ class App extends React.Component<Props, State> {
                 overflow: 'hidden',
                 wordBreak: 'break-word'
               }}>
-                <List.Header as='a' href={s.info!.swarmGatewayUrl + '/files/' + x.reference} target="_blank">{x.filename}</List.Header>
+                <List.Header as='a' href={s.info!.swarmGatewayUrl + '/bzz/' + x.reference} target="_blank">{x.filename}</List.Header>
                 {/* <List.Description as='a'>{x.mimetype}</List.Description> */}
               </List.Content>
             </List.Item>
@@ -115,7 +115,7 @@ class App extends React.Component<Props, State> {
                 overflow: 'hidden',
                 wordBreak: 'break-word'
               }}>
-                <List.Header as='a' href={s.info!.swarmGatewayUrl + '/files/' + x.reference} target="_blank">{x.filename}</List.Header>
+                <List.Header as='a' href={s.info!.swarmGatewayUrl + '/bzz/' + x.reference} target="_blank">{x.filename}</List.Header>
                 {/* <List.Description as='a'>{x.mimetype}</List.Description> */}
               </List.Content>
               <List.Content floated='right'>
