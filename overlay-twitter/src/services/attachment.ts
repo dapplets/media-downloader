@@ -1,6 +1,30 @@
 import abi from './abi';
 import * as ethers from "ethers";
 import { Bee } from "@ethersphere/bee-js";
+import mime from 'mime';
+
+function extractJSON(str: string) {
+    let firstOpen: any, firstClose: any, candidate: any;
+    firstOpen = str.indexOf('{', firstOpen + 1);
+    do {
+        firstClose = str.lastIndexOf('}');
+        if (firstClose <= firstOpen) {
+            return null;
+        }
+        do {
+            candidate = str.substring(firstOpen, firstClose + 1);
+            try {
+                let res = JSON.parse(candidate);
+                return res;
+            }
+            catch (_) { }
+            firstClose = str.substr(0, firstClose).lastIndexOf('}');
+        } while (firstClose > firstOpen);
+        firstOpen = str.indexOf('{', firstOpen + 1);
+    } while (firstOpen != -1);
+
+    return null;
+}
 
 export type Attachment = {
     mimetype: string;
@@ -35,17 +59,15 @@ export class AttachmentService {
         try {
             if (ref.indexOf('0x') !== -1) ref = ref.replace('0x', '');
             const arr = await this._bee.downloadData(ref);
-            const manifestRef = this._buf2hex(arr.slice(32, 64));
-            const arr2 = await this._bee.downloadData(manifestRef);
-            const json = new TextDecoder("utf-8").decode(arr2);
-            const manifest = JSON.parse(json);
-            return manifest;
+            const data = new TextDecoder("utf-8").decode(arr);
+            const manifest = extractJSON(data);
+            if (!manifest || !manifest["website-index-document"]) return null;
+            return {
+                filename: manifest["website-index-document"],
+                mimetype: mime.getType(manifest["website-index-document"]) ?? ''
+            };
         } catch (_) {
             return null;
         }
-    }
-
-    private _buf2hex(buffer: ArrayBuffer) {
-        return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
     }
 }
