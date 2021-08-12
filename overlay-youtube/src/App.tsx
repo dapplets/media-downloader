@@ -24,6 +24,7 @@ interface State {
   isStreamingSupported: boolean;
   tag: string | null;
   hash: string | null;
+  error: string | null;
 }
 
 class App extends React.Component<Props, State> {
@@ -42,7 +43,8 @@ class App extends React.Component<Props, State> {
       uploadStatus: 0,
       isStreamingSupported: !new Request('', { body: new ReadableStream(), method: 'POST' }).headers.has('Content-Type'),
       tag: null,
-      hash: null
+      hash: null,
+      error: null
     };
   }
 
@@ -77,8 +79,10 @@ class App extends React.Component<Props, State> {
     const extension = mime.getExtension(mimeType); 
     const filename = `${info.videoInfo.videoDetails.author.name} - ${info.videoInfo.videoDetails.title} (${qualityName}).${extension}`;
     
-    const data = await bridge.download(url, filename);
-    this.setState({ uploading: false, swarmReference: data.reference, tag: data.tag })
+    bridge.download(url, filename)
+      .then(data => this.setState({ uploading: false, swarmReference: data.reference, tag: data.tag }))
+      .catch(err => this.setState({ uploading: false, error: err }))
+    
   }
 
   render() {
@@ -97,7 +101,7 @@ class App extends React.Component<Props, State> {
     if (s.downloadStatus === 1 && s.uploadStatus === 1 && s.swarmReference) {
       status = 'Done'
     } else if (s.downloadStatus === 1 && s.uploadStatus === 1) {
-      status = '3/3 Waiting Swarm Hash'
+      status = '3/3 Indexing and waiting Swarm hash'
     } else if (s.downloadStatus === 1) {
       status = '2/3 Uploading'
     } else {
@@ -183,6 +187,11 @@ class App extends React.Component<Props, State> {
           The video is uploaded and will be available <b>later</b> by this URL: <a target='_blank' href={`${s.info!.swarmGatewayUrl}/bzz/${s.swarmReference!}`}>{s.info!.swarmGatewayUrl}/bzz/{s.swarmReference}</a>
         </p>
         <p>Swarm Tag: {s.tag}</p>
+      </Message> : null}
+
+      {(s.error) ? <Message error style={{ wordBreak: 'break-word' }}>
+        <Message.Header>Error</Message.Header>
+        <p>{s.error}</p>
       </Message> : null}
 
     </Container>

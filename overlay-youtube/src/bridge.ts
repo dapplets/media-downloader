@@ -17,7 +17,7 @@ class Bridge extends AbstractBridge {
     }
 
     download(url: string, filename: string) {
-        return this.call('download', { url, filename }, 'downloaded');
+        return this.call('download', { url, filename }, 'download_done', 'download_error');
     }
 
     onDownloadStatus(callback: (value: number) => void) {
@@ -28,16 +28,21 @@ class Bridge extends AbstractBridge {
         this.subscribe('upload_status', callback);
     }
 
-    public async call(method: string, args: any, callbackEvent: string): Promise<any> {
+    public async call(method: string, args: any, successEvent: string, errorEvent: string): Promise<any> {
         return new Promise((res, rej) => {
             this.publish(this._subId.toString(), {
                 type: method,
                 message: args
             });
-            this.subscribe(callbackEvent, (result: any) => {
-                this.unsubscribe(callbackEvent);
+            this.subscribe(successEvent, (result: any) => {
+                this.unsubscribe(successEvent);
+                this.unsubscribe(errorEvent);
                 res(result);
-                // ToDo: add reject call
+            });
+            this.subscribe(errorEvent, (error: any) => {
+                this.unsubscribe(successEvent);
+                this.unsubscribe(errorEvent);
+                rej(error);
             });
         });
     }

@@ -3,7 +3,8 @@
     "required": [
         "swarmGatewayUrl",
         "swarmPostageStampId",
-        "contractAddress"
+        "contractAddress",
+        "searchEngineUrl"
     ],
     "properties": {
         "swarmGatewayUrl": {
@@ -17,6 +18,10 @@
         "contractAddress": {
             "type": "string",
             "title": "Contract Address"
+        },
+        "searchEngineUrl": {
+            "type": "string",
+            "title": "Search Engine URL"
         }
     }
 }
