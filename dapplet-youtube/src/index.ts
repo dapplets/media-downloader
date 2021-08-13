@@ -106,7 +106,7 @@ export default class TwitterFeature {
                             try {
                                 me.state = 'LOADING';
 
-                                const overlay = Core.overlay({ name: "swarm-hackathon-downloader-overlay", title: 'Media Downloader' });
+                                const overlay = Core.overlay({ name: "swarm-hackathon-downloader-overlay", title: 'Swarm Downloader' });
                                 overlay.send(null); // just open overlay
 
                                 const swarmGatewayUrl = await Core.storage.get('swarmGatewayUrl');
