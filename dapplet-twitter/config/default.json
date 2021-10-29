@@ -1,14 +1,14 @@
 {
     "main": {
-        "swarmGatewayUrl": "https://bee.dapplets.org",
+        "swarmGatewayUrl": "https://swarmgateway.mooo.com",
         "contractAddress": "0xCf628980da3Fc2E709454C6D5a4B5ffde29021f1"
     },
     "test": {
-        "swarmGatewayUrl": "https://bee.dapplets.org",
+        "swarmGatewayUrl": "https://swarmgateway.mooo.com",
         "contractAddress": "0xCf628980da3Fc2E709454C6D5a4B5ffde29021f1"
     },
     "dev": {
-        "swarmGatewayUrl": "https://bee.dapplets.org",
+        "swarmGatewayUrl": "https://swarmgateway.mooo.com",
         "contractAddress": "0xCf628980da3Fc2E709454C6D5a4B5ffde29021f1"
     }
 }
