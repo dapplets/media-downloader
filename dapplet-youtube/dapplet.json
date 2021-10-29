@@ -7,13 +7,13 @@
     "description": { "$ref": "package.json#/description" },
     "main": { "$ref": "package.json#/main" },
     "icon": "src/icons/swarm-458px.png",
-    "contextIds": ["youtube-adapter.dapplet-base.eth"],
+    "contextIds": ["youtube-adapter"],
     "config": {
         "schema": "config/schema.json",
         "default": "config/default.json"
     },
     "dependencies": {
-        "youtube-adapter.dapplet-base.eth": "0.6.3"
+        "youtube-adapter": "0.1.4"
     },
     "overlays": {
         "swarm-hackathon-downloader-overlay": "https://localhost:3004"

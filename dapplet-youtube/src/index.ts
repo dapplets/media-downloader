@@ -33,7 +33,7 @@ export default class TwitterFeature {
 
     private _contract;
 
-    @Inject("youtube-adapter.dapplet-base.eth")
+    @Inject("youtube-adapter")
     public adapter: any //ITwitterAdapter;
 
     public async activate() {
