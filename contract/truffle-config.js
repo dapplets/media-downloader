@@ -19,6 +19,13 @@ module.exports = {
       },
       network_id: '4',
       gas: 10000000
+    },
+    goerli: {
+      provider: function () {
+        return new HDWalletProvider(config.rinkeby_mnemonic, `https://goerli.infura.io/v3/${config.rinkeby_infura_api_key}`);
+      },
+      network_id: '5',
+      gas: 10000000
     }
   }
 };

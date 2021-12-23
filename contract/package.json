@@ -10,6 +10,7 @@
     "test": "truffle test",
     "migrate": "truffle migrate",
     "migrate:rinkeby": "truffle migrate --network rinkeby --skip-dry-run --reset",
+    "migrate:goerli": "truffle migrate --network goerli --skip-dry-run --reset",
     "compile": "truffle compile"
   },
   "author": "Project Dapplets",
