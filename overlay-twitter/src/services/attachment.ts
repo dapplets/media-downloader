@@ -37,7 +37,7 @@ export class AttachmentService {
     private _bee;
 
     constructor(_contractAddress: string, private _swarmGatewayAddress: string) {
-        const signer = new ethers.providers.StaticJsonRpcProvider('https://rinkeby.infura.io/v3/e2b99cd257a5468d94749fa32f75fc3c', 4);
+        const signer = new ethers.providers.StaticJsonRpcProvider('https://goerli.mooo.com', 5);
         this._contract = new ethers.Contract(_contractAddress, abi, signer);
         this._bee = new Bee(_swarmGatewayAddress);
     }

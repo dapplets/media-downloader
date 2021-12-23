@@ -37,7 +37,7 @@ export default class TwitterFeature {
 
                             overlay.sendAndListen('info', { ...ctx, swarmGatewayUrl, contractAddress }, {
                                 'get_account': async () => {
-                                    const wallet = await Core.wallet({ type: 'ethereum', network: 'rinkeby' });
+                                    const wallet = await Core.wallet({ type: 'ethereum', network: 'goerli' });
                                     if (!await wallet.isConnected()) await wallet.connect();
                                     wallet.sendAndListen('eth_accounts', [], {
                                         result: (op, { type, data }) => overlay.send('current_account', data[0])
