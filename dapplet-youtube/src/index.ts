@@ -41,8 +41,6 @@ export default class TwitterFeature {
         const address = await Core.storage.get('contractAddress');
         this._contract = await Core.contract('ethereum', address, abi);
 
-        console.log(this._contract);
-
         const { button, badge, result } = this.adapter.exports;
 
         this.adapter.attachConfig({
