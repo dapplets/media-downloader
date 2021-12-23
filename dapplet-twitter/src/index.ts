@@ -20,7 +20,7 @@ export default class TwitterFeature {
 
     public async activate() {
         const address = await Core.storage.get('contractAddress');
-        this._contract = Core.contract('ethereum', address, abi);
+        this._contract = await Core.contract('ethereum', address, abi);
 
         const { button, badge } = this.adapter.exports;
 
