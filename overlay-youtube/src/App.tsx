@@ -109,14 +109,14 @@ class App extends React.Component<Props, State> {
     }
 
     return <Container style={{ paddingTop: '15px' }}>
-      {(!s.isStreamingSupported) ? <Message warning>
+      {/* {(!s.isStreamingSupported) ? <Message warning>
         <Message.Header>Compatibility Mode</Message.Header>
         <p>
           Your browser doesn't support streaming requests with the fetch API.
           Downloading and uploading will be sequential and take a longer time.
           More details read here: <a href="https://web.dev/fetch-upload-streaming" target="_blank">https://web.dev/fetch-upload-streaming</a>
         </p>
-      </Message> : null}
+      </Message> : null} */}
 
       {(s.hash && s.info) ? <>
         <Divider horizontal>Available Attachments</Divider>
