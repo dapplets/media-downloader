@@ -4,7 +4,6 @@ import DOWNLOAD_ICON from './icons/download-24px.svg';
 import DONE_ICON from './icons/done-24px.svg';
 import THUMBNAIL_IMG from './icons/thumbnail.png';
 import abi from './abi';
-import { AutoProperties, Connection } from '@dapplets/dapplet-extension/lib/inpage/connection';
 
 type IndexMetadata = {
     title: string;
@@ -165,7 +164,7 @@ export default class TwitterFeature {
         return tx.wait();
     }
 
-    private async _download(url: string, filename: string, overlay: AutoProperties<unknown> & Connection, swarmGatewayUrl: string, me: any, videoId: string, swarmPostageStampId: string, videoInfo: any) {
+    private async _download(url: string, filename: string, overlay: any, swarmGatewayUrl: string, me: any, videoId: string, swarmPostageStampId: string, videoInfo: any) {
         try {
             const supportsRequestStreams = !new Request('', {
                 body: new ReadableStream(),
