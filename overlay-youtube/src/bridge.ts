@@ -6,7 +6,7 @@ export interface Info {
     contractAddress: string;
 }
 
-class Bridge extends AbstractBridge {
+export class Bridge extends AbstractBridge {
     _subId = 0;
 
     onInfo(callback: (info: Info) => void) {
@@ -16,16 +16,46 @@ class Bridge extends AbstractBridge {
         });
     }
 
-    download(url: string, filename: string) {
-        return this.call('download', { url, filename }, 'download_done', 'download_error');
+    download(url: string, filename: string, swarmPostageStampId: string) {
+        return this.call('download', { url, filename, swarmPostageStampId }, 'download_done', 'download_error');
+    }
+
+    calcPrice(ttl: number, sizeInBytes: string) {
+        return this.call('calcPrice', { ttl, sizeInBytes }, 'calcPrice_done', 'calcPrice_error');
+    }
+
+    getAllowance() {
+        return this.call('getAllowance', { }, 'getAllowance_done', 'getAllowance_error');
+    }
+
+    approve(amount: string) {
+        return this.call('approve', { amount }, 'approve_done', 'approve_error');
+    }
+
+    createBatch(initialBalancePerChunk: string, depth: number) {
+        return this.call('createBatch', { initialBalancePerChunk, depth }, 'createBatch_done', 'createBatch_error');
+    }
+
+    addAttachment(videoId: string, reference: string) {
+        return this.call('addAttachment', { videoId, reference }, 'addAttachment_done', 'addAttachment_error');
     }
 
     onDownloadStatus(callback: (value: number) => void) {
         this.subscribe('download_status', callback);
+        return {
+            unsubscribe: () => {
+                this.unsubscribe('download_status');
+            }
+        }
     }
 
     onUploadStatus(callback: (value: number) => void) {
         this.subscribe('upload_status', callback);
+        return {
+            unsubscribe: () => {
+                this.unsubscribe('upload_status');
+            }
+        }
     }
 
     public async call(method: string, args: any, successEvent: string, errorEvent: string): Promise<any> {

@@ -5,7 +5,8 @@
     "main": "index.js",
     "scripts": {
         "postinstall": "concurrently -c \"red,green,yellow,blue,magenta,cyan\" -n \"adapter,dapplet-youtube,dapplet-twitter,overlay-youtube,overlay-twitter,contract\" \"cd adapter && npm i\" \"cd dapplet-youtube && npm i\" \"cd dapplet-twitter && npm i\" \"cd overlay-youtube && npm i\" \"cd overlay-twitter && npm i\" \"cd contract && npm i\"",
-        "start": "concurrently -c \"red,green,yellow,blue,magenta\" -n \"adapter,dapplet-youtube,dapplet-twitter,overlay-youtube,overlay-twitter\" \"cd adapter && npm start\" \"cd dapplet-youtube && npm start\" \"cd dapplet-twitter && npm start\" \"cd overlay-youtube && npm start\" \"cd overlay-twitter && npm start\""
+        "start": "concurrently -c \"red,green,yellow,blue,magenta\" -n \"adapter,dapplet-youtube,dapplet-twitter,overlay-youtube,overlay-twitter\" \"cd adapter && npm start\" \"cd dapplet-youtube && npm start\" \"cd dapplet-twitter && npm start\" \"cd overlay-youtube && npm start\" \"cd overlay-twitter && npm start\"",
+        "start:dapplet": "concurrently -c \"red,green\" -n \"dapplet-youtube,overlay-youtube\" \"cd dapplet-youtube && npm start\" \"cd overlay-youtube && npm start\""
     },
     "repository": {
         "type": "git",

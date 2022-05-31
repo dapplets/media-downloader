@@ -13,7 +13,7 @@
         "default": "config/default.json"
     },
     "dependencies": {
-        "youtube-adapter": "0.1.4"
+        "youtube-adapter": "0.1.7"
     },
     "overlays": {
         "swarm-hackathon-downloader-overlay": "https://localhost:3004"

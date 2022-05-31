@@ -1,6 +1,6 @@
 {
   "name": "swarm-hackathon-downloader.dapplet-base.eth",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "description": "Download YouTube videos to Swarm. Liberate Data Week Hackathon.",
   "main": "lib/index.js",
   "scripts": {
