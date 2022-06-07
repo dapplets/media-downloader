@@ -1,20 +1,23 @@
 {
     "main": {
-        "swarmGatewayUrl": "https://swarmgateway.mooo.com",
-        "swarmPostageStampId": "1e72b8764d878c3320fde6c9b7e32ff059d41de1607a5c6920a269b51b891a9e",
-        "contractAddress": "0x2A5170cCcfbB90EA6c10cCcfc0D9e1F9aFBBA063",
+        "network": "xdai",
+        "useCustomNode": false,
+        "swarmGatewayUrl": "",
+        "operatorAddress": "",
         "searchEngineUrl": "https://swarm-search-server.herokuapp.com/"
     },
     "test": {
-        "swarmGatewayUrl": "https://swarmgateway.mooo.com",
-        "swarmPostageStampId": "1e72b8764d878c3320fde6c9b7e32ff059d41de1607a5c6920a269b51b891a9e",
-        "contractAddress": "0x2A5170cCcfbB90EA6c10cCcfc0D9e1F9aFBBA063",
+        "network": "xdai",
+        "useCustomNode": false,
+        "swarmGatewayUrl": "",
+        "operatorAddress": "",
         "searchEngineUrl": "https://swarm-search-server.herokuapp.com/"
     },
     "dev": {
-        "swarmGatewayUrl": "https://swarmgateway.mooo.com",
-        "swarmPostageStampId": "1e72b8764d878c3320fde6c9b7e32ff059d41de1607a5c6920a269b51b891a9e",
-        "contractAddress": "0x2A5170cCcfbB90EA6c10cCcfc0D9e1F9aFBBA063",
+        "network": "xdai",
+        "useCustomNode": false,
+        "swarmGatewayUrl": "",
+        "operatorAddress": "",
         "searchEngineUrl": "http://localhost:3000/"
     }
 }

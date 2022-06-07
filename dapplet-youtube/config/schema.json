@@ -1,23 +1,30 @@
 {
     "type": "object",
     "required": [
-        "swarmGatewayUrl",
-        "swarmPostageStampId",
-        "contractAddress",
+        "network",
+        "useCustomNode",
         "searchEngineUrl"
     ],
     "properties": {
+        "network": {
+            "type": "string",
+            "title": "Target network",
+            "enum": [
+                "goerli",
+                "xdai"
+            ]
+        },
+        "useCustomNode": {
+            "type": "boolean",
+            "title": "Use custom node settings"
+        },
         "swarmGatewayUrl": {
             "type": "string",
-            "title": "Swarm Gateway URL"
+            "title": "Custom Swarm gateway URL"
         },
-        "swarmPostageStampId": {
+        "operatorAddress": {
             "type": "string",
-            "title": "Swarm Postage Stamp ID"
-        },
-        "contractAddress": {
-            "type": "string",
-            "title": "Contract Address"
+            "title": "Custom operator address"
         },
         "searchEngineUrl": {
             "type": "string",

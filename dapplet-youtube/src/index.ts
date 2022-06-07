@@ -6,21 +6,49 @@ import { DappletApi } from "./api";
 @Injectable
 export default class TwitterFeature {
     private _api: DappletApi;
+    private _network: string;
+    private _videoRegistryAddress: string;
+    private _bzzTokenAddress: string;
+    private _postageStampAddress: string;
     private _swarmGatewayUrl: string;
-    private _contractAddress: string;
+    private _operatorAddress: string;
 
     @Inject("youtube-adapter")
     public adapter: any; //ITwitterAdapter;
 
     public async activate() {
-        this._swarmGatewayUrl = "https://swarmgateway.mooo.com";
-        this._contractAddress = "0x2A5170cCcfbB90EA6c10cCcfc0D9e1F9aFBBA063";
+
+        this._network = await Core.storage.get('network');
+
+        if (this._network === 'goerli') {
+            this._swarmGatewayUrl = "https://swarmgateway.mooo.com";
+            this._operatorAddress = "0x74f0D4F6eb62b93dfDD3E5CD15DF99b4f5D1A86a";
+            this._bzzTokenAddress = "0x2ac3c1d3e24b45c6c310534bc2dd84b5ed576335";
+            this._postageStampAddress = "0x621e455c4a139f5c4e4a8122ce55dc21630769e4";
+            this._videoRegistryAddress = "0x2A5170cCcfbB90EA6c10cCcfc0D9e1F9aFBBA063";
+        } else if (this._network === 'xdai') {
+            this._swarmGatewayUrl = "https://swarm-mainnet.mooo.com";
+            this._operatorAddress = "0x80ff8c6ee38d10522f65fecb517da2a839f6fc81";
+            this._bzzTokenAddress = "0xdBF3Ea6F5beE45c02255B2c26a16F300502F68da";
+            this._postageStampAddress = "0x6a1A21ECA3aB28BE85C7Ba22b2d6eAE5907c900E";     
+            this._videoRegistryAddress = "0x2A5170cCcfbB90EA6c10cCcfc0D9e1F9aFBBA063";       
+        } else {
+            throw new Error('Unsupported network. The Media Downloader is able to work on "goerli" and "xdai" networks');
+        }
+
+        const useCustomNode = await Core.storage.get('useCustomNode');
+
+        if (useCustomNode) {
+            this._swarmGatewayUrl = await Core.storage.get('swarmGatewayUrl');
+            this._operatorAddress = await Core.storage.get('operatorAddress');
+        }
 
         this._api = new DappletApi({
-            postageStampAddress: "0x621e455c4a139f5c4e4a8122ce55dc21630769e4",
-            bzzTokenAddress: "0x2ac3c1d3e24b45c6c310534bc2dd84b5ed576335",
-            nodeOperatorAddress: "0x74f0D4F6eb62b93dfDD3E5CD15DF99b4f5D1A86a",
-            videoRegistryAddress: this._contractAddress,
+            network: this._network,
+            postageStampAddress: this._postageStampAddress,
+            bzzTokenAddress: this._bzzTokenAddress,
+            nodeOperatorAddress: this._operatorAddress,
+            videoRegistryAddress: this._videoRegistryAddress,
             swarmGatewayUrl: this._swarmGatewayUrl,
         });
 
@@ -106,9 +134,10 @@ export default class TwitterFeature {
         }
 
         const data = {
+            network: this._network,
             videoInfo,
             swarmGatewayUrl: this._swarmGatewayUrl,
-            contractAddress: this._contractAddress,
+            contractAddress: this._videoRegistryAddress,
         };
 
         const overlay = Core.overlay({
@@ -200,6 +229,15 @@ export default class TwitterFeature {
                     .catch((e) => {
                         console.error(e);
                         overlay.send("approve_error", e);
+                    });
+            },
+            fetchFilesize: async (_, { message }) => {
+                this._api
+                    .fetchFilesize(message.url)
+                    .then((x) => overlay.send("fetchFilesize_done", x))
+                    .catch((e) => {
+                        console.error(e);
+                        overlay.send("fetchFilesize_error", e);
                     });
             },
         });

@@ -34,9 +34,12 @@ type CalculationPriceResult = {
     postageStampChunks: number;
     initialBalancePerChunk: string;
     totalAmount: string;
+    bzzBalance: string;
+    isBalanceEnough: boolean;
 };
 
 type DappletApiConfig = {
+    network: string;
     postageStampAddress: string;
     bzzTokenAddress: string;
     nodeOperatorAddress: string;
@@ -45,6 +48,7 @@ type DappletApiConfig = {
 };
 
 export class DappletApi {
+    private _network: string;
     private _postageStampAddress: string;
     private _bzzTokenAddress: string;
     private _nodeOperatorAddress: string;
@@ -52,6 +56,7 @@ export class DappletApi {
     private _swarmGatewayUrl: string;
 
     constructor(config: DappletApiConfig) {
+        this._network = config.network;
         this._postageStampAddress = config.postageStampAddress;
         this._bzzTokenAddress = config.bzzTokenAddress;
         this._nodeOperatorAddress = config.nodeOperatorAddress;
@@ -64,7 +69,7 @@ export class DappletApi {
         sizeInBytes: string
     ): Promise<CalculationPriceResult> {
         const contract = await Core.contract(
-            "ethereum",
+            this._network === "goerli" ? "ethereum" : ("ethereum/xdai" as any),
             this._postageStampAddress,
             PostageStamp
         );
@@ -80,6 +85,10 @@ export class DappletApi {
         const initialBalancePerChunk = pricePerBlock.mul(ttl).div(blockTime);
         const totalAmount = initialBalancePerChunk.mul(postageStampChunks);
 
+        const bzzBalance = await this.getBalance();
+        const isBalanceEnough =
+            Core.ethers.BigNumber.from(bzzBalance).gte(totalAmount);
+
         return {
             depth,
             chunks,
@@ -88,6 +97,8 @@ export class DappletApi {
             postageStampChunks,
             initialBalancePerChunk: initialBalancePerChunk.toString(),
             totalAmount: totalAmount.toString(),
+            bzzBalance,
+            isBalanceEnough,
         };
     }
 
@@ -96,7 +107,7 @@ export class DappletApi {
 
         const wallet = await Core.wallet({
             type: "ethereum",
-            network: "goerli",
+            network: this._network as any,
         });
         if (!(await wallet.isConnected())) await wallet.connect();
         const [sender] = await wallet.request({
@@ -115,7 +126,7 @@ export class DappletApi {
         );
 
         const contract = await Core.contract(
-            "ethereum",
+            this._network === "goerli" ? "ethereum" : ("ethereum/xdai" as any),
             this._postageStampAddress,
             PostageStamp
         );
@@ -136,7 +147,7 @@ export class DappletApi {
     async getAllowance(): Promise<string> {
         const wallet = await Core.wallet({
             type: "ethereum",
-            network: "goerli",
+            network: this._network as any,
         });
         if (!(await wallet.isConnected())) await wallet.connect();
         const [account] = await wallet.request({
@@ -144,7 +155,7 @@ export class DappletApi {
             params: [],
         });
         const contract = await Core.contract(
-            "ethereum",
+            this._network === "goerli" ? "ethereum" : ("ethereum/xdai" as any),
             this._bzzTokenAddress,
             BzzToken
         );
@@ -155,14 +166,44 @@ export class DappletApi {
         return allowed.toString();
     }
 
+    async getBalance(): Promise<string> {
+        const wallet = await Core.wallet({
+            type: "ethereum",
+            network: this._network as any,
+        });
+        if (!(await wallet.isConnected())) await wallet.connect();
+        const [account] = await wallet.request({
+            method: "eth_accounts",
+            params: [],
+        });
+        const contract = await Core.contract(
+            this._network === "goerli" ? "ethereum" : ("ethereum/xdai" as any),
+            this._bzzTokenAddress,
+            BzzToken
+        );
+        const balance = await contract.balanceOf(account);
+        return balance.toString();
+    }
+
     async approve(amount: string) {
         const contract = await Core.contract(
-            "ethereum",
+            this._network === "goerli" ? "ethereum" : ("ethereum/xdai" as any),
             this._bzzTokenAddress,
             BzzToken
         );
         const tx = await contract.approve(this._postageStampAddress, amount);
         await tx.wait();
+    }
+
+    async fetchFilesize(url: string): Promise<number> {
+        try {
+            const controller = new AbortController();
+            const resp = await fetch(url, { signal: controller.signal });
+            controller.abort();
+            return +resp.headers.get("Content-Length");
+        } catch (_) {
+            return null;
+        }
     }
 
     async uploadVideoToSwarm({

@@ -37,6 +37,8 @@ interface Props {
     error: string | null;
     price: CalculationPriceResult | null;
     storageDays: string;
+    filesize: number | null;
+    isPriceLoading: boolean;
     onContinueClick: () => void;
     onQualityChange: (value: string) => void;
     onStorageDaysChange: (value: string) => void;
@@ -51,7 +53,9 @@ export const SelectVideo: React.FC<Props> = ({
     hash,
     error,
     price,
+    filesize,
     storageDays,
+    isPriceLoading,
     onContinueClick,
     onQualityChange,
     onStorageDaysChange,
@@ -101,79 +105,104 @@ export const SelectVideo: React.FC<Props> = ({
                     />
                 </Form.Group>
 
-                {price && (
-                    <div style={{ marginTop: "15px" }}>
-                        <div>You will pay</div>
+                {!isPriceLoading ? (
+                    <>
+                        {price && filesize && (
+                            <div style={{ marginTop: "15px" }}>
+                                <div>You will pay</div>
 
-                        <Header size="large" style={{ margin: "5px 0" }}>
-                            {ethers.utils.formatUnits(price.totalAmount, 16)}{" "}
-                            BZZ
-                        </Header>
+                                <Header
+                                    size="large"
+                                    style={{ margin: "5px 0" }}
+                                >
+                                    {ethers.utils.formatUnits(
+                                        price.totalAmount,
+                                        16
+                                    )}{" "}
+                                    BZZ
+                                </Header>
 
-                        <div>
-                            for{" "}
-                            {(format.contentLength / 1024 / 1024).toFixed(2)} MB
-                        </div>
-                        <div>
-                            until{" "}
-                            {new Date(
-                                Date.now() +
-                                    Number(storageDays) * 24 * 60 * 60 * 1000
-                            ).toLocaleDateString()}
-                        </div>
-
-                        {isBatchDetailsVisible && price && (
-                            <>
-                                <div>Chunks: {price.chunks}</div>
-                                <div>Depth: {price.depth}</div>
                                 <div>
-                                    TTL: {Number(storageDays) * 24 * 60 * 60}
+                                    for {(filesize / 1024 / 1024).toFixed(2)} MB
                                 </div>
                                 <div>
-                                    Initial balance per chunk:{" "}
-                                    {price.initialBalancePerChunk?.toString()}
+                                    until{" "}
+                                    {new Date(
+                                        Date.now() +
+                                            Number(storageDays) *
+                                                24 *
+                                                60 *
+                                                60 *
+                                                1000
+                                    ).toLocaleDateString()}
                                 </div>
-                            </>
+
+                                {isBatchDetailsVisible && price && (
+                                    <>
+                                        <div>Chunks: {price.chunks}</div>
+                                        <div>Depth: {price.depth}</div>
+                                        <div>
+                                            TTL:{" "}
+                                            {Number(storageDays) * 24 * 60 * 60}
+                                        </div>
+                                        <div>
+                                            Initial balance per chunk:{" "}
+                                            {price.initialBalancePerChunk?.toString()}
+                                        </div>
+                                    </>
+                                )}
+
+                                {!isBatchDetailsVisible ? (
+                                    <div>
+                                        <a
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() =>
+                                                setBatchDetailsVisible(true)
+                                            }
+                                        >
+                                            More details...
+                                        </a>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <a
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() =>
+                                                setBatchDetailsVisible(false)
+                                            }
+                                        >
+                                            Less details...
+                                        </a>
+                                    </div>
+                                )}
+                            </div>
                         )}
 
-                        {!isBatchDetailsVisible ? (
-                            <div>
-                                <a
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() => setBatchDetailsVisible(true)}
-                                >
-                                    More details...
-                                </a>
-                            </div>
-                        ) : (
-                            <div>
-                                <a
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() =>
-                                        setBatchDetailsVisible(false)
-                                    }
-                                >
-                                    Less details...
-                                </a>
-                            </div>
+                        {filesize && !price?.isBalanceEnough && (
+                            <p>
+                                <Icon name="warning sign" />
+                                You don't have enough BZZ tokens. Top up your
+                                account to continue.
+                            </p>
                         )}
-                    </div>
+
+                        {!price && !filesize && (
+                            <p>
+                                <Icon name="warning sign" />
+                                Video is unavailable for downloading.
+                            </p>
+                        )}
+                    </>
+                ) : (
+                    <p>Price calculation...</p>
                 )}
-
-                {/* <p>
-                    <Icon name="info circle" />
-                    The video you selected will be uploaded to Swarm and becomes
-                    publicly available. After upload, you'll receive a swarm
-                    reference (hash). Please keep it safe; you will need it to
-                    retrieve the file later.
-                </p> */}
 
                 <div style={{ marginTop: "15px" }}>
                     {!swarmReference && !uploading ? (
                         <Button
                             primary
                             onClick={onContinueClick}
-                            // disabled={uploading}
+                            disabled={!price?.isBalanceEnough || isPriceLoading}
                             // loading={uploading}
                         >
                             Continue

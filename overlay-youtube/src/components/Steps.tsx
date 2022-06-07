@@ -16,7 +16,7 @@ const STEPS = [
     },
     {
         number: 3,
-        title: "Wait 5 minutes",
+        title: "Wait a few minutes",
         description:
             "Once your batch has been purchased, it will take a few minutes for other Bee nodes in the Swarm to catch up and register your batch. Allow some time for your batch to propagate in the network before proceeding to the next step. Do not close the window. Otherwise, you will have to buy postage stamps again.",
     },

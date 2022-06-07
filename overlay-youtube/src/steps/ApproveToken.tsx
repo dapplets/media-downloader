@@ -59,13 +59,15 @@ export const ApproveToken: React.FC<Props> = ({
                 isHalf={isLoading}
             />
 
-            <Progress
-                style={{ margin: '2em 0' }}
-                percent={Math.floor(progress * 100)}
-                progress
-                color="green"
-                label={!isLoading ? "Waiting action..." : undefined}
-            />
+            {progress !== 0 ? (
+                <Progress
+                    style={{ margin: "2em 0" }}
+                    percent={Math.floor(progress * 100)}
+                    progress
+                    color="green"
+                    label={!isLoading ? "Waiting action..." : undefined}
+                />
+            ) : null}
 
             <div style={{ marginTop: "15px" }}>
                 <Button

@@ -50,6 +50,8 @@ interface State {
     swarmPostageStampId: string;
     isBatchDetailsVisible: boolean;
     step: UploadingStep;
+    filesize: number | null;
+    isPriceLoading: boolean;
 }
 
 class App extends React.Component<Props, State> {
@@ -68,6 +70,8 @@ class App extends React.Component<Props, State> {
             swarmPostageStampId: "",
             isBatchDetailsVisible: false,
             step: UploadingStep.SELECT_VIDEO,
+            filesize: null,
+            isPriceLoading: false
         };
     }
 
@@ -76,8 +80,6 @@ class App extends React.Component<Props, State> {
             const hash = await digestMessage(
                 info.videoInfo.videoDetails.videoId
             );
-
-            console.log("info.videoInfo.formats", info.videoInfo.formats);
 
             const formatOptions = info.videoInfo.formats
                 .filter((x: any) => x.hasAudio && x.hasVideo)
@@ -109,15 +111,25 @@ class App extends React.Component<Props, State> {
     };
 
     async _updatePrice() {
-        const value = this.state.selectedUrl;
-        const ttl = Number(this.state.storageDays) * 24 * 60 * 60; // ttl in seconds
-        const format = this.state.info?.videoInfo.formats.find(
-            (x: any) => x.url === value
-        );
-        console.log("format", format);
-        const price = await bridge.calcPrice(ttl, format.contentLength);
-        console.log("price", price);
-        this.setState({ price });
+        try {
+            this.setState({ isPriceLoading: true });
+
+            const value = this.state.selectedUrl;
+            if (!value) return;
+
+            const ttl = Number(this.state.storageDays) * 24 * 60 * 60; // ttl in seconds
+            const filesize = await bridge.fetchFilesize(value);
+            if (!filesize) {
+                this.setState({ price: null, filesize });
+            } else {
+                const price = await bridge.calcPrice(ttl, filesize);
+                this.setState({ price, filesize });
+            }
+        } catch (_) {
+
+        } finally {
+            this.setState({ isPriceLoading: false });
+        }
     }
 
     render() {
@@ -133,7 +145,9 @@ class App extends React.Component<Props, State> {
             error,
             price,
             storageDays,
-            swarmPostageStampId
+            swarmPostageStampId,
+            filesize,
+            isPriceLoading
         } = this.state;
 
         const format = this.state.info?.videoInfo.formats.find(
@@ -163,6 +177,8 @@ class App extends React.Component<Props, State> {
                             error={error}
                             price={price}
                             storageDays={storageDays}
+                            filesize={filesize}
+                            isPriceLoading={isPriceLoading}
                             onContinueClick={() =>
                                 this.setState({
                                     step: UploadingStep.APPROVE_TOKEN,

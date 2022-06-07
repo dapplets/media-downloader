@@ -1,6 +1,7 @@
 import AbstractBridge from '@dapplets/dapplet-overlay-bridge';
 
 export interface Info {
+    network: string;
     videoInfo: any;
     swarmGatewayUrl: string;
     contractAddress: string;
@@ -38,6 +39,10 @@ export class Bridge extends AbstractBridge {
 
     addAttachment(videoId: string, reference: string) {
         return this.call('addAttachment', { videoId, reference }, 'addAttachment_done', 'addAttachment_error');
+    }
+
+    fetchFilesize(url: string) {
+        return this.call('fetchFilesize', { url }, 'fetchFilesize_done', 'fetchFilesize_error');
     }
 
     onDownloadStatus(callback: (value: number) => void) {

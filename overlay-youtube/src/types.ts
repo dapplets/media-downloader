@@ -6,6 +6,8 @@ export type CalculationPriceResult = {
     postageStampChunks: number;
     initialBalancePerChunk: string;
     totalAmount: string;
+    bzzBalance: string;
+    isBalanceEnough: boolean;
 };
 
 export enum UploadingStep {

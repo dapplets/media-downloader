@@ -6,7 +6,8 @@ import { VideoCard } from "../components/VideoCard";
 import { UploadingStep } from "../types";
 import { convertTime } from "../utils";
 
-const WAITING_TIME = 5 * 60 * 1000; // 5 minutes
+const WAITING_TIME_GOERLI = 5 * 60 * 1000; // 5 minutes (20 blocks * 15 seconds)
+const WAITING_TIME_XDAI = 110 * 1000; // 110 seconds (20 blocks * 5.5 seconds)
 
 interface Props {
     swarmPostageStampId: string;
@@ -19,6 +20,8 @@ export const WaitBatch: React.FC<Props> = ({
     swarmPostageStampId,
     onContinueClick,
 }: Props) => {
+    const WAITING_TIME =
+        info.network === "goerli" ? WAITING_TIME_GOERLI : WAITING_TIME_XDAI;
     const [progress, setProgress] = useState(0.2); // max = 0.7
     const [remainingTime, setRemainingTime] = useState(WAITING_TIME);
 
@@ -48,18 +51,18 @@ export const WaitBatch: React.FC<Props> = ({
             <Steps activeStep={UploadingStep.WAIT_BATCH} />
 
             <Progress
-                style={{ margin: '2em 0' }}
+                style={{ margin: "2em 0" }}
                 percent={Math.floor(progress * 100)}
                 progress
                 color="green"
             />
 
             <div style={{ marginTop: "15px" }}>
+                <p>Time remaining: {convertTime(remainingTime / 1000)}</p>
                 <p>The batch of postage stamps is created.</p>
                 <p style={{ overflowWrap: "break-word" }}>
                     Batch ID: {swarmPostageStampId}
                 </p>
-                <p>Time remaining: {convertTime(remainingTime / 1000)}</p>
             </div>
         </div>
     );
