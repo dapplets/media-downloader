@@ -20,18 +20,21 @@ export const RegisterLink: React.FC<Props> = ({
 }: Props) => {
     const [isLoading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0.9);
+    const [error, setError] = useState<string | null>(null);
 
     const fileUrl = new URL(`/bzz/${swarmReference}`, info.swarmGatewayUrl).href;
 
     async function handleRegisterButtonClick() {
         try {
+            setError(null);
             setLoading(true);
             setProgress(0.95);
             await bridge.addAttachment(videoId, swarmReference);
             setProgress(1);
             onContinueClick();
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
+            setError((typeof e === 'string') ? e : (e.reason ?? e.message ?? 'An error has occurred. Please, try again.'));
             setProgress(0.9);
         } finally {
             setLoading(false);
@@ -57,6 +60,12 @@ export const RegisterLink: React.FC<Props> = ({
                 <p>The video is uploaded to the Swarm.</p>
                 <p style={{ overflowWrap: 'break-word' }}>Swarm link: {fileUrl}</p>
             </div>
+
+            {error && (
+                <div style={{ marginTop: "15px", color: "#9f3a38" }}>
+                    <p>{error}</p>
+                </div>
+            )}
 
             <div style={{ marginTop: "15px" }}>
                 <Button

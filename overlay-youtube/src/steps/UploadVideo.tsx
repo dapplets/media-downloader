@@ -29,6 +29,7 @@ export const UploadVideo: React.FC<Props> = ({
     const [downloadStatus, setDownloadStatus] = useState(0);
     const [uploadStatus, setUploadStatus] = useState(0);
     const [progress, setProgress] = useState(0.7);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const { unsubscribe: unsubscribeDownload } =
@@ -50,6 +51,7 @@ export const UploadVideo: React.FC<Props> = ({
 
     async function hanldeUploadButtonClick() {
         try {
+            setError(null);
             setLoading(true);
 
             const qualityName = formatOptions.find(
@@ -71,8 +73,9 @@ export const UploadVideo: React.FC<Props> = ({
             );
 
             onContinueClick({ reference, tag });
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
+            setError((typeof e === 'string') ? e : (e.reason ?? e.message ?? 'An error has occurred. Please, try again.'));
         } finally {
             setLoading(false);
         }
@@ -92,6 +95,12 @@ export const UploadVideo: React.FC<Props> = ({
                 color="green"
                 label={!isLoading ? "Waiting action..." : undefined}
             />
+
+            {error && (
+                <div style={{ marginTop: "15px", color: "#9f3a38" }}>
+                    <p>{error}</p>
+                </div>
+            )}
 
             <div style={{ marginTop: "15px" }}>
                 <Button

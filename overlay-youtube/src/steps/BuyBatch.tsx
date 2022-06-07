@@ -18,9 +18,11 @@ export const BuyBatch: React.FC<Props> = ({
 }: Props) => {
     const [isLoading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0.1);
+    const [error, setError] = useState<string | null>(null);
 
     async function handleBuyStampClick() {
         try {
+            setError(null);
             setLoading(true);
             setProgress(0.15);
             const { initialBalancePerChunk, depth } = price;
@@ -30,8 +32,9 @@ export const BuyBatch: React.FC<Props> = ({
             );
             setProgress(0.2);
             onContinueClick(swarmPostageStampId);
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
+            setError((typeof e === 'string') ? e : (e.reason ?? e.message ?? 'An error has occurred. Please, try again.'));
             setProgress(0.1);
         } finally {
             setLoading(false);
@@ -52,6 +55,12 @@ export const BuyBatch: React.FC<Props> = ({
                 color="green"
                 label={!isLoading ? "Waiting action..." : undefined}
             />
+
+            {error && (
+                <div style={{ marginTop: "15px", color: "#9f3a38" }}>
+                    <p>{error}</p>
+                </div>
+            )}
 
             <div style={{ marginTop: "15px" }}>
                 <Button

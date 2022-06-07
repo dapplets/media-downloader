@@ -19,9 +19,11 @@ export const ApproveToken: React.FC<Props> = ({
 }: Props) => {
     const [isLoading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [error, setError] = useState<string | null>(null);
 
     async function handleApproveButtonClick() {
         try {
+            setError(null);
             setLoading(true);
             setProgress(0.05);
 
@@ -41,8 +43,9 @@ export const ApproveToken: React.FC<Props> = ({
 
             setProgress(0.1);
             onContinueClick();
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
+            setError((typeof e === 'string') ? e : (e.reason ?? e.message ?? 'An error has occurred. Please, try again.'));
             setProgress(0);
         } finally {
             setLoading(false);
@@ -68,6 +71,12 @@ export const ApproveToken: React.FC<Props> = ({
                     label={!isLoading ? "Waiting action..." : undefined}
                 />
             ) : null}
+
+            {error && (
+                <div style={{ marginTop: "15px", color: "#9f3a38" }}>
+                    <p>{error}</p>
+                </div>
+            )}
 
             <div style={{ marginTop: "15px" }}>
                 <Button
