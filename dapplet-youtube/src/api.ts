@@ -285,11 +285,12 @@ export class DappletApi {
     async getAttachments(videoId: string) {
         const hash = await digestMessage(videoId);
         const contract = await Core.contract(
-            "ethereum",
+            this._network === "goerli" ? "ethereum" : ("ethereum/xdai" as any),
             this._videoRegistryAddress,
             VideoRegistry
         );
-        return contract.getByKey("0x" + hash);
+        const attachments = await contract.getByKey("0x" + hash);
+        return attachments;
     }
 
     async addAttachment(videoId: string, ref: string) {
@@ -299,7 +300,7 @@ export class DappletApi {
 
         const hash = await digestMessage(videoId);
         const contract = await Core.contract(
-            "ethereum",
+            this._network === "goerli" ? "ethereum" : ("ethereum/xdai" as any),
             this._videoRegistryAddress,
             VideoRegistry
         );

@@ -1,5 +1,5 @@
 import React, { ProfilerOnRenderCallback, useState } from "react";
-import { bridge, Info } from "../bridge";
+import { Bridge, bridge, Info } from "../bridge";
 import {
     Button,
     Container,
@@ -24,6 +24,7 @@ import { CalculationPriceResult } from "../types";
 import { VideoCard } from "../components/VideoCard";
 
 interface Props {
+    bridge: Bridge;
     info: Info;
     selectedUrl: string | null;
     formatOptions: {
@@ -33,7 +34,7 @@ interface Props {
     }[];
     uploading: boolean;
     swarmReference: string | null;
-    hash: string | null;
+    videoId: string | null;
     error: string | null;
     price: CalculationPriceResult | null;
     storageDays: string;
@@ -45,12 +46,13 @@ interface Props {
 }
 
 export const SelectVideo: React.FC<Props> = ({
+    bridge,
     info,
     selectedUrl,
     formatOptions,
     uploading,
     swarmReference,
-    hash,
+    videoId,
     error,
     price,
     filesize,
@@ -68,11 +70,36 @@ export const SelectVideo: React.FC<Props> = ({
 
     return (
         <>
-            {hash && info ? (
+            {swarmReference ? (
+                <Message success style={{ wordBreak: "break-word" }}>
+                    <Message.Header>Uploaded</Message.Header>
+                    <p>
+                        The video is uploaded and will be available <b>later</b>{" "}
+                        by this URL:{" "}
+                        <a
+                            target="_blank"
+                            href={`${
+                                info!.swarmGatewayUrl
+                            }/bzz/${swarmReference!}`}
+                        >
+                            {info!.swarmGatewayUrl}/bzz/{swarmReference}
+                        </a>
+                    </p>
+                </Message>
+            ) : null}
+
+            {error ? (
+                <Message error style={{ wordBreak: "break-word" }}>
+                    <Message.Header>Error</Message.Header>
+                    <p>{error}</p>
+                </Message>
+            ) : null}
+
+            {videoId && info ? (
                 <>
-                    <Divider horizontal>Uploaded videos</Divider>
                     <Attachments
-                        hash={hash}
+                        bridge={bridge}
+                        videoId={videoId}
                         swarmGateway={info.swarmGatewayUrl}
                         contractAddress={info.contractAddress}
                     />
@@ -210,31 +237,6 @@ export const SelectVideo: React.FC<Props> = ({
                     ) : null}
                 </div>
             </Form>
-
-            {swarmReference ? (
-                <Message success style={{ wordBreak: "break-word" }}>
-                    <Message.Header>Uploaded</Message.Header>
-                    <p>
-                        The video is uploaded and will be available <b>later</b>{" "}
-                        by this URL:{" "}
-                        <a
-                            target="_blank"
-                            href={`${
-                                info!.swarmGatewayUrl
-                            }/bzz/${swarmReference!}`}
-                        >
-                            {info!.swarmGatewayUrl}/bzz/{swarmReference}
-                        </a>
-                    </p>
-                </Message>
-            ) : null}
-
-            {error ? (
-                <Message error style={{ wordBreak: "break-word" }}>
-                    <Message.Header>Error</Message.Header>
-                    <p>{error}</p>
-                </Message>
-            ) : null}
         </>
     );
 };

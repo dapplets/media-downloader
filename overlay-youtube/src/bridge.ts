@@ -37,6 +37,10 @@ export class Bridge extends AbstractBridge {
         return this.call('createBatch', { initialBalancePerChunk, depth }, 'createBatch_done', 'createBatch_error');
     }
 
+    getAttachments(videoId: string) {
+        return this.call('getAttachments', { videoId }, 'getAttachments_done', 'getAttachments_error');
+    }
+
     addAttachment(videoId: string, reference: string) {
         return this.call('addAttachment', { videoId, reference }, 'addAttachment_done', 'addAttachment_error');
     }

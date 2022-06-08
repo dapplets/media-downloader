@@ -43,7 +43,6 @@ interface State {
     }[];
     uploading: boolean;
     swarmReference: string | null;
-    hash: string | null;
     error: string | null;
     price: CalculationPriceResult | null;
     storageDays: string;
@@ -63,7 +62,6 @@ class App extends React.Component<Props, State> {
             formatOptions: [],
             uploading: false,
             swarmReference: null,
-            hash: null,
             error: null,
             price: null,
             storageDays: "365",
@@ -77,10 +75,6 @@ class App extends React.Component<Props, State> {
 
     componentDidMount() {
         bridge.onInfo(async (info) => {
-            const hash = await digestMessage(
-                info.videoInfo.videoDetails.videoId
-            );
-
             const formatOptions = info.videoInfo.formats
                 .filter((x: any) => x.hasAudio && x.hasVideo)
                 .map((x: any, i: number) => ({
@@ -90,7 +84,7 @@ class App extends React.Component<Props, State> {
                 }));
 
             const selectedUrl = formatOptions[0]?.key;
-            this.setState({ info, formatOptions, selectedUrl, hash });
+            this.setState({ info, formatOptions, selectedUrl });
 
             this._handleQualityChange(selectedUrl);
         });
@@ -141,7 +135,6 @@ class App extends React.Component<Props, State> {
             formatOptions,
             uploading,
             swarmReference,
-            hash,
             error,
             price,
             storageDays,
@@ -168,12 +161,13 @@ class App extends React.Component<Props, State> {
                 return (
                     <Container style={{ paddingTop: "15px" }}>
                         <SelectVideo
+                            bridge={bridge}
                             info={info}
                             selectedUrl={selectedUrl}
                             formatOptions={formatOptions}
                             uploading={uploading}
                             swarmReference={swarmReference}
-                            hash={hash}
+                            videoId={info.videoInfo.videoDetails.videoId}
                             error={error}
                             price={price}
                             storageDays={storageDays}

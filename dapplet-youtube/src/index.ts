@@ -30,8 +30,8 @@ export default class TwitterFeature {
             this._swarmGatewayUrl = "https://swarm-mainnet.mooo.com";
             this._operatorAddress = "0x80ff8c6ee38d10522f65fecb517da2a839f6fc81";
             this._bzzTokenAddress = "0xdBF3Ea6F5beE45c02255B2c26a16F300502F68da";
-            this._postageStampAddress = "0x6a1A21ECA3aB28BE85C7Ba22b2d6eAE5907c900E";     
-            this._videoRegistryAddress = "0x2A5170cCcfbB90EA6c10cCcfc0D9e1F9aFBBA063";       
+            this._postageStampAddress = "0x6a1A21ECA3aB28BE85C7Ba22b2d6eAE5907c900E";
+            this._videoRegistryAddress = "0xB76E21a8Af501fc5def4Eca6fdd1eA0A858B5ee2";
         } else {
             throw new Error('Unsupported network. The Media Downloader is able to work on "goerli" and "xdai" networks');
         }
@@ -137,7 +137,7 @@ export default class TwitterFeature {
             network: this._network,
             videoInfo,
             swarmGatewayUrl: this._swarmGatewayUrl,
-            contractAddress: this._videoRegistryAddress,
+            contractAddress: this._videoRegistryAddress
         };
 
         const overlay = Core.overlay({
@@ -145,10 +145,10 @@ export default class TwitterFeature {
             title: "Swarm Downloader",
         });
 
-        overlay.send(null); // just open overlay
-
+        overlay.send("info", data);
+        
         // ToDo: use new overlay.declare() API for function declaration
-        overlay.sendAndListen("info", data, {
+        overlay.listen({
             download: async (_, { message }) => {
                 try {
                     const { blob, reference, tag } =
@@ -185,6 +185,15 @@ export default class TwitterFeature {
                 } catch (e) {
                     overlay.send("download_error", e.message);
                 }
+            },
+            getAttachments: (_, { message }) => {
+                this._api
+                    .getAttachments(message.videoId)
+                    .then((x) => overlay.send("getAttachments_done", x))
+                    .catch((e) => {
+                        console.error(e);
+                        overlay.send("getAttachments_error", e);
+                    });
             },
             addAttachment: async (_, { message }) => {
                 this._api
