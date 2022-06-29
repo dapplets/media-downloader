@@ -1,6 +1,7 @@
 import {} from "@dapplets/dapplet-extension";
 //import { T_TwitterFeatureConfig, ITwitterAdapter } from '@dapplets/twitter-adapter'
-import DOWNLOAD_ICON from "./icons/download-24px.svg";
+import DOWNLOAD_ICON_WHITE from "./icons/download-24px-white.svg";
+import DOWNLOAD_ICON_BLACK from "./icons/download-24px-black.svg";
 import { DappletApi } from "./api";
 
 @Injectable
@@ -71,21 +72,30 @@ export default class TwitterFeature {
                 button({
                     initial: "DEFAULT",
                     DEFAULT: {
-                        img: DOWNLOAD_ICON,
-                        label: "DOWNLOAD",
+                        img: {
+                            DARK: DOWNLOAD_ICON_WHITE,
+                            LIGHT: DOWNLOAD_ICON_BLACK
+                        },
+                        label: "Download",
                         tooltip: "Download and upload video to Swarm",
                         init: this._handleVideoInit,
                         exec: this._handleVideoExec,
                     },
                     LOADING: {
-                        img: DOWNLOAD_ICON,
-                        label: "LOADING",
+                        img: {
+                            DARK: DOWNLOAD_ICON_WHITE,
+                            LIGHT: DOWNLOAD_ICON_BLACK
+                        },
+                        label: "Loading",
                         disabled: true,
                         loading: true,
                     },
                     ERROR: {
-                        img: DOWNLOAD_ICON,
-                        label: "ERROR",
+                        img: {
+                            DARK: DOWNLOAD_ICON_WHITE,
+                            LIGHT: DOWNLOAD_ICON_BLACK
+                        },
+                        label: "Error",
                         exec: (_, me) => (me.state = "DEFAULT"),
                     },
                 }),
@@ -105,9 +115,9 @@ export default class TwitterFeature {
         const attachments = await this._api.getAttachments(ctx.videoId);
         me.state = "DEFAULT";
         if (attachments.length > 0) {
-            me.label = "AVAILABLE IN SWARM";
+            me.label = "Available in Swarm";
         } else {
-            me.label = "UPLOAD TO SWARM";
+            me.label = "Upload to Swarm";
         }
     };
 
