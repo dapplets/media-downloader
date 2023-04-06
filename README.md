@@ -1,3 +1,5 @@
+<img width="1245" alt="media-downloader" src="https://user-images.githubusercontent.com/43613968/230372147-61bc129c-9769-46cd-bff5-0919cc538cde.png">
+
 # Media Downloader
 
 This project was developed at the [**Liberate Data Week Hackathon**](https://medium.com/ethereum-swarm/liberate-data-week-join-the-hackathon-7291bd307e32) in 8–14 February 2021.
